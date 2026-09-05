@@ -127,6 +127,40 @@ a{color:var(--green)}
 .pop-close:hover{color:var(--ink);background:var(--paper)}
 .pop-arrow{position:absolute;left:16px;top:-6px;width:12px;height:12px;background:var(--card);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
 .popover.arrow-bottom .pop-arrow{top:auto;bottom:-6px;border-left:none;border-top:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* ===== bifă "azi" (istoric) ===== */
+.todayBtn{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0;margin-top:1px;margin-left:4px}
+.todayBtn:hover{border-color:var(--sage);color:var(--green)}
+.todayBtn.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.todayBtn svg{width:15px;height:15px}
+
+/* ===== tab Istoric ===== */
+.histCards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 20px}
+.histCard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.histCard .l{font-size:12px;color:var(--muted)}
+.histCard .n{font-family:'Fraunces',Georgia,serif;font-size:21px;font-weight:600;color:var(--green);margin-top:2px}
+.histNav{display:flex;align-items:center;justify-content:center;gap:18px;margin:4px 0 12px}
+.histMonthLabel{font-weight:600;min-width:150px;text-align:center;text-transform:capitalize}
+.histDow{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;font-size:11px;color:var(--muted);text-align:center;margin-bottom:4px}
+.histGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.histDay{aspect-ratio:1;border:none;border-radius:7px;font-size:12px;cursor:pointer;background:var(--paper);color:var(--muted);font-family:inherit}
+.histDay.today{outline:2px solid var(--amber);outline-offset:-1px;font-weight:600}
+.histDay.lvl1{background:var(--e1);color:var(--ink)}
+.histDay.lvl2{background:var(--sage);color:#fff}
+.histDay.lvl3{background:var(--ok);color:#fff}
+.histDay.lvl4{background:var(--green);color:#fff}
+.histDay.sel{box-shadow:0 0 0 2px var(--ink) inset}
+.histLegend{display:flex;align-items:center;gap:7px;margin:12px 0 4px;font-size:12px;color:var(--muted)}
+.histLegend .sw{width:14px;height:14px;border-radius:4px;display:inline-block;background:var(--paper)}
+.histLegend .lvl1{background:var(--e1)} .histLegend .lvl2{background:var(--sage)} .histLegend .lvl3{background:var(--ok)} .histLegend .lvl4{background:var(--green)}
+.histDetail{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:16px}
+.histDetailDate{font-weight:600;text-transform:capitalize;margin-bottom:8px}
+.histSummary{display:flex;gap:14px;font-size:13px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
+.histSummary .tot{margin-left:auto;color:var(--ink);font-weight:600}
+.histItem{display:flex;align-items:center;gap:8px;font-size:13.5px;padding:7px 0;border-top:1px solid var(--line)}
+.histItem:first-child{border-top:none}
+.histEmpty{color:var(--muted);font-size:13.5px}
+@media (max-width:560px){ .histCards{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
 <body>
@@ -153,6 +187,7 @@ a{color:var(--green)}
   <div class="tabs" role="tablist">
     <button class="tab on" id="tabChk" role="tab" aria-selected="true">Checklist săptămânal</button>
     <button class="tab" id="tabInv" role="tab" aria-selected="false">Toate exercițiile</button>
+    <button class="tab" id="tabHist" role="tab" aria-selected="false">Istoric</button>
   </div>
 
   <div id="viewChk">
@@ -171,6 +206,7 @@ a{color:var(--green)}
   </div>
 
   <div id="viewInv" style="display:none"></div>
+  <div id="viewHist" style="display:none"></div>
 </div>
 
 <div class="foot" id="foot">
@@ -320,6 +356,9 @@ const CUSTOM_WKS = [];
 const isCustom = () => wk==='custom';
 const currentList = () => isCustom() ? CUSTOM : W[wk].x;
 const INFO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><line x1="12" y1="16.5" x2="12" y2="11.5"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+const TODAY_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3M16 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M9 14l2 2 4-4"/></svg>';
+const CUSTOM_INDEX = new Map(CUSTOM.map((x,i)=>[x[0]+'|'+x[1], i]));
+const customIndexOf = x => CUSTOM_INDEX.get(x[0]+'|'+x[1]);
 
 /* ===== persistență: window.storage (Claude) → localStorage → memorie ===== */
 let mem = {};
@@ -334,6 +373,70 @@ const store = {
 };
 let sel = {};   /* { "3": {0:true, 2:true} } */
 let wk = 1, view='chk';
+
+/* ===== istoric zilnic (jurnal separat de plan — Opțiunea B) ===== */
+let memH = {};
+const histStore = {
+  async get(){ try{ if(window.storage){ const r=await window.storage.get('papapp_history'); return r?JSON.parse(r.value):{} } }catch(e){}
+               try{ const v=localStorage.getItem('papapp_history'); if(v) return JSON.parse(v) }catch(e){}
+               return memH; },
+  async set(d){ memH=d; try{ if(window.storage){ await window.storage.set('papapp_history', JSON.stringify(d)) } }catch(e){}
+               try{ localStorage.setItem('papapp_history', JSON.stringify(d)) }catch(e){}
+               flashSaved(); }
+};
+let history = {};   /* { "2026-09-05": {"3":true, "12":true} } — chei = index în CUSTOM */
+let histYear = new Date().getFullYear(), histMonth = new Date().getMonth(), histSelected = null;
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+function isoOf(y,m,d){ return y+'-'+pad2(m+1)+'-'+pad2(d); }
+function todayISO(){ const d=new Date(); return isoOf(d.getFullYear(), d.getMonth(), d.getDate()); }
+
+function dayTotal(dateStr){
+  const h=history[dateStr]; const r={min:0,count:0,corp:0,suflet:0,minte:0,items:[]};
+  if(!h) return r;
+  Object.keys(h).forEach(k=>{
+    if(!h[k]) return;
+    const x=CUSTOM[+k]; if(!x) return;
+    r.min+=x[4]; r.count++; r.items.push(x);
+    if(x[5]==='Corp') r.corp++; else if(x[5]==='Suflet') r.suflet++; else r.minte++;
+  });
+  return r;
+}
+const isActiveDay = dateStr => dayTotal(dateStr).count>0;
+
+function computeStreaks(){
+  let cur=0; const d=new Date();
+  if(!isActiveDay(todayISO())) d.setDate(d.getDate()-1);
+  while(isActiveDay(isoOf(d.getFullYear(), d.getMonth(), d.getDate()))){ cur++; d.setDate(d.getDate()-1); }
+  const dates = Object.keys(history).filter(isActiveDay).sort();
+  let best=0, run=0, prev=null;
+  dates.forEach(dt=>{
+    if(prev){ const diff=Math.round((new Date(dt)-new Date(prev))/86400000); run = diff===1 ? run+1 : 1; }
+    else run=1;
+    best=Math.max(best,run); prev=dt;
+  });
+  return {cur, best:Math.max(best,cur)};
+}
+function weekActiveDays(){
+  let n=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); if(isActiveDay(isoOf(d.getFullYear(),d.getMonth(),d.getDate()))) n++; } return n;
+}
+function monthCompletionPct(year,month){
+  const now=new Date();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const lastDay=(year===now.getFullYear()&&month===now.getMonth())?now.getDate():daysInMonth;
+  let active=0; for(let d=1; d<=lastDay; d++){ if(isActiveDay(isoOf(year,month,d))) active++; }
+  return lastDay?Math.round(active/lastDay*100):0;
+}
+
+async function toggleToday(x){
+  const idx=customIndexOf(x); const day=todayISO();
+  history[day]=history[day]||{};
+  history[day][idx]=!history[day][idx];
+  if(!history[day][idx]) delete history[day][idx];
+  if(Object.keys(history[day]).length===0) delete history[day];
+  await histStore.set(history);
+  if(view==='chk') renderWeek(); else if(view==='inv') renderInv(); else if(view==='hist') renderHist();
+}
 
 function flashSaved(){ const s=document.getElementById('saved'); s.classList.add('show'); clearTimeout(s._t); s._t=setTimeout(()=>s.classList.remove('show'),1200); }
 const isDaily = f => f.startsWith('zilnic');
@@ -362,6 +465,18 @@ function makeInfoBtn(text, steps){
   return b;
 }
 
+function makeTodayBtn(x){
+  const idx=customIndexOf(x);
+  const doneToday=!!(history[todayISO()]||{})[idx];
+  const b=document.createElement('button');
+  b.type='button'; b.className='todayBtn'+(doneToday?' on':'');
+  b.setAttribute('aria-label', doneToday?'Bifat azi — click pentru a anula':'Bifează ca făcut azi');
+  b.title = doneToday?'Făcut azi':'Marchează ca făcut azi';
+  b.innerHTML=TODAY_SVG;
+  b.addEventListener('click',(e)=>{ e.stopPropagation(); toggleToday(x); });
+  return b;
+}
+
 function buildRow(x, i, on, onToggle, extraMetaHTML){
   const row=document.createElement('div');
   row.className='row'+(on?' on':''); row.tabIndex=0;
@@ -370,16 +485,20 @@ function buildRow(x, i, on, onToggle, extraMetaHTML){
     <span class="lbl">${x[0]}
       <span class="meta">${metaHTML(x)}${extraMetaHTML||''}</span>
     </span>`;
+  row.appendChild(makeTodayBtn(x));
   row.appendChild(makeInfoBtn(x[6], x[7]));
-  row.addEventListener('click',(e)=>{ if(e.target.closest('.infoBtn')) return; onToggle(); });
+  row.addEventListener('click',(e)=>{ if(e.target.closest('.infoBtn')||e.target.closest('.todayBtn')) return; onToggle(); });
   row.addEventListener('keydown',(e)=>{
-    if(e.target.closest('.infoBtn')) return;
+    if(e.target.closest('.infoBtn')||e.target.closest('.todayBtn')) return;
     if(e.key===' '||e.key==='Enter'){ e.preventDefault(); onToggle(); }
   });
   return row;
 }
 
 function refreshFooter(){
+  const footEl=document.getElementById('foot');
+  if(view==='hist'){ footEl.style.display='none'; return; }
+  footEl.style.display='';
   let d=0,p=0;
   if(view==='chk'){
     const s=sel[wk]||{};
@@ -565,16 +684,86 @@ document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') hideInfo(); });
 window.addEventListener('scroll', ()=>{ if(Date.now()-popupOpenedAt>350) hideInfo(); });
 window.addEventListener('resize', hideInfo);
 
+/* ===== tab Istoric: calendar + centralizatoare ===== */
+const MONTH_NAMES=['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+function showHistDetail(iso){
+  histSelected=iso;
+  document.querySelectorAll('.histDay.sel').forEach(e=>e.classList.remove('sel'));
+  const cell=document.querySelector(`.histDay[data-iso="${iso}"]`); if(cell) cell.classList.add('sel');
+  const detail=document.getElementById('histDetail'); if(!detail) return;
+  const t=dayTotal(iso);
+  const dateLabel=new Date(iso+'T00:00:00').toLocaleDateString('ro-RO',{weekday:'long',day:'numeric',month:'long'});
+  if(t.count===0){
+    detail.innerHTML=`<div class="histDetailDate">${dateLabel}</div><div class="histEmpty">Nimic notat în ziua asta — bifează „azi" pe un exercițiu ca să apară aici.</div>`;
+    return;
+  }
+  const rows=t.items.map(x=>`<div class="histItem"><span class="chip pillar ${pillarClass(x[5])}">${x[5]}</span>${x[0]}<span class="chip t" style="margin-left:auto">${x[4]} min</span></div>`).join('');
+  detail.innerHTML=`<div class="histDetailDate">${dateLabel}</div>
+    <div class="histSummary"><span>Corp: ${t.corp}</span><span>Suflet: ${t.suflet}</span><span>Minte: ${t.minte}</span><span class="tot">${t.min} min total</span></div>
+    <div class="histItems">${rows}</div>`;
+}
+function renderHist(){
+  const V=document.getElementById('viewHist'); V.innerHTML='';
+  document.getElementById('foot').style.display='none';
+  const {cur,best}=computeStreaks(), wkA=weekActiveDays(), pct=monthCompletionPct(histYear,histMonth);
+  const cards=document.createElement('div'); cards.className='histCards';
+  cards.innerHTML=`<div class="histCard"><div class="l">Streak curent</div><div class="n">${cur} ${cur===1?'zi':'zile'}</div></div>
+    <div class="histCard"><div class="l">Cel mai bun streak</div><div class="n">${best} ${best===1?'zi':'zile'}</div></div>
+    <div class="histCard"><div class="l">Ultimele 7 zile</div><div class="n">${wkA}/7 zile</div></div>
+    <div class="histCard"><div class="l">Luna aceasta</div><div class="n">${pct}%</div></div>`;
+  V.appendChild(cards);
+
+  const nav=document.createElement('div'); nav.className='histNav';
+  nav.innerHTML=`<button class="btn" id="histPrev" aria-label="Luna anterioară">‹</button><div class="histMonthLabel">${MONTH_NAMES[histMonth]} ${histYear}</div><button class="btn" id="histNext" aria-label="Luna următoare">›</button>`;
+  V.appendChild(nav);
+
+  const dow=document.createElement('div'); dow.className='histDow';
+  ['L','Ma','Mi','J','V','S','D'].forEach(d=>{ const s=document.createElement('div'); s.textContent=d; dow.appendChild(s); });
+  V.appendChild(dow);
+
+  const grid=document.createElement('div'); grid.className='histGrid';
+  let startOffset=new Date(histYear,histMonth,1).getDay(); startOffset=(startOffset+6)%7;
+  for(let i=0;i<startOffset;i++) grid.appendChild(document.createElement('div'));
+  const daysInMonth=new Date(histYear,histMonth+1,0).getDate(), todayStr=todayISO();
+  for(let d=1; d<=daysInMonth; d++){
+    const iso=isoOf(histYear,histMonth,d), t=dayTotal(iso);
+    const lvl=t.min<=0?0:t.min<15?1:t.min<30?2:t.min<60?3:4;
+    const cell=document.createElement('button');
+    cell.type='button'; cell.className='histDay lvl'+lvl; cell.dataset.iso=iso;
+    if(iso===todayStr) cell.classList.add('today');
+    cell.textContent=d;
+    cell.title=t.min>0?`${t.min} min · ${t.count} exerciții`:'Nimic notat';
+    cell.addEventListener('click',()=>showHistDetail(iso));
+    grid.appendChild(cell);
+  }
+  V.appendChild(grid);
+
+  const legend=document.createElement('div'); legend.className='histLegend';
+  legend.innerHTML=`<span>Puțin</span><span class="sw lvl0"></span><span class="sw lvl1"></span><span class="sw lvl2"></span><span class="sw lvl3"></span><span class="sw lvl4"></span><span>Mult</span>`;
+  V.appendChild(legend);
+
+  const detail=document.createElement('div'); detail.id='histDetail'; detail.className='histDetail';
+  V.appendChild(detail);
+
+  document.getElementById('histPrev').onclick=()=>{ histMonth--; if(histMonth<0){histMonth=11;histYear--;} renderHist(); };
+  document.getElementById('histNext').onclick=()=>{ histMonth++; if(histMonth>11){histMonth=0;histYear++;} renderHist(); };
+
+  const toShow=(histSelected && histSelected.startsWith(histYear+'-'+pad2(histMonth+1))) ? histSelected :
+    (histYear===new Date().getFullYear()&&histMonth===new Date().getMonth()) ? todayStr : isoOf(histYear,histMonth,1);
+  showHistDetail(toShow);
+}
+
 /* ===== taburi ===== */
-const tC=document.getElementById('tabChk'), tI=document.getElementById('tabInv');
+const tC=document.getElementById('tabChk'), tI=document.getElementById('tabInv'), tH=document.getElementById('tabHist');
 function setView(v){ view=v; hideInfo();
-  tC.classList.toggle('on',v==='chk'); tI.classList.toggle('on',v==='inv');
-  tC.setAttribute('aria-selected',v==='chk'); tI.setAttribute('aria-selected',v==='inv');
+  tC.classList.toggle('on',v==='chk'); tI.classList.toggle('on',v==='inv'); tH.classList.toggle('on',v==='hist');
+  tC.setAttribute('aria-selected',v==='chk'); tI.setAttribute('aria-selected',v==='inv'); tH.setAttribute('aria-selected',v==='hist');
   document.getElementById('viewChk').style.display=v==='chk'?'':'none';
   document.getElementById('viewInv').style.display=v==='inv'?'':'none';
-  if(v==='chk') renderWeek(); else renderInv();
+  document.getElementById('viewHist').style.display=v==='hist'?'':'none';
+  if(v==='chk') renderWeek(); else if(v==='inv') renderInv(); else renderHist();
 }
-tC.onclick=()=>setView('chk'); tI.onclick=()=>setView('inv');
+tC.onclick=()=>setView('chk'); tI.onclick=()=>setView('inv'); tH.onclick=()=>setView('hist');
 
 /* ===== temă (mod întunecat) ===== */
 const themeBtn = document.getElementById('themeBtn');
@@ -599,7 +788,11 @@ themeBtn.onclick=async()=>{
 })();
 
 /* ===== start ===== */
-(async()=>{ try{ sel=await store.get()||{} }catch(e){ sel={} } renderWeek(); renderInv(); })();
+(async()=>{
+  try{ sel=await store.get()||{} }catch(e){ sel={} }
+  try{ history=await histStore.get()||{} }catch(e){ history={} }
+  renderWeek(); renderInv();
+})();
 </script>
 </body>
 </html>
