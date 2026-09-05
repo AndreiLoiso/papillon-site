@@ -161,6 +161,59 @@ a{color:var(--green)}
 .histItem:first-child{border-top:none}
 .histEmpty{color:var(--muted);font-size:13.5px}
 @media (max-width:560px){ .histCards{grid-template-columns:repeat(2,1fr)} }
+
+/* ===== toast (undo) ===== */
+.toastContainer{position:fixed;left:0;right:0;bottom:118px;z-index:70;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;background:var(--ink);color:var(--paper);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:14px;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100vw - 32px)}
+.toast button{background:none;border:1px solid rgba(255,255,255,.35);color:inherit;border-radius:7px;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.toast button:hover{background:rgba(255,255,255,.12)}
+
+/* ===== modal generic (backup / cloud) ===== */
+.modalOverlay{position:fixed;inset:0;background:rgba(20,26,20,.5);z-index:80;display:none;align-items:center;justify-content:center;padding:16px}
+.modalOverlay.show{display:flex}
+.modalBox{background:var(--card);border-radius:14px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;padding:20px 22px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.modalBox h3{font-family:'Fraunces',Georgia,serif;font-size:19px;margin:0 0 12px;color:var(--green)}
+.modalClose{position:absolute;top:12px;right:14px;border:none;background:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:7px}
+.modalClose:hover{background:var(--paper);color:var(--ink)}
+.backupRow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+.backupRow:first-child{border-top:none}
+.backupRow button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer;color:var(--green)}
+.backupRow button:hover{background:var(--okbg)}
+.backupLink{background:none;border:none;color:var(--muted);font-size:12.5px;text-decoration:underline;cursor:pointer;padding:0;margin-top:10px}
+
+/* ===== Roata Vieții ===== */
+.wheelWrap{text-align:center;margin:8px 0 18px}
+.wheelCatCard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0}
+.wheelCatHead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wheelCatName{font-weight:600}
+.wheelCatScore{font-family:'Fraunces',Georgia,serif;font-size:20px;color:var(--green);font-weight:600}
+.wheelCatActions{display:flex;gap:6px;margin-top:8px}
+.wheelForm{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:none}
+.wheelForm.show{display:block}
+.wheelForm input[type=number]{width:64px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--paper);color:var(--ink)}
+.wheelForm textarea{width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px;background:var(--paper);color:var(--ink);resize:vertical;min-height:50px}
+.wheelHistList{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:none}
+.wheelHistList.show{display:block}
+.wheelHistList div{padding:3px 0}
+.addCatBtn{margin-top:6px}
+
+/* ===== cloud sync ===== */
+.cloudBtn{flex:0 0 auto;width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;display:grid;place-items:center;position:relative}
+.cloudBtn:hover{background:var(--okbg)}
+.cloudBtn svg{width:17px;height:17px}
+.cloudBtn.on{color:var(--ok)}
+.cloudBtn.err{color:#B0503F}
+.cloudBtn .dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.cloudBtn.on .dot{background:var(--ok)}
+.cloudBtn.err .dot{background:#B0503F}
+.cloudForm label{display:block;font-size:12.5px;color:var(--muted);margin-top:10px}
+.cloudForm input{width:100%;margin-top:4px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--paper);color:var(--ink)}
+.cloudActions{display:flex;gap:8px;margin-top:14px}
+.cloudActions button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 10px;font:inherit;font-size:13px;cursor:pointer;color:var(--green)}
+.cloudActions button.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.cloudActions button:hover{opacity:.9}
+.cloudErr{color:#B0503F;font-size:12.5px;margin-top:8px;min-height:1em}
+.cloudNote{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -170,6 +223,10 @@ a{color:var(--green)}
     <a class="navlink on" href="index.html">Planificator</a>
     <a class="navlink" href="ghid-complet.html">Ghid Complet</a>
     <a class="navlink" href="ghid-rapid.html">Ghid Rapid</a>
+    <button class="cloudBtn" id="cloudBtn" aria-label="Sincronizare cloud" title="Cloud">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.4-8.98A5.5 5.5 0 0 1 17.2 8.2 4 4 0 0 1 17 16H7Z"/></svg>
+      <span class="dot"></span>
+    </button>
     <button class="themeBtn" id="themeBtn" aria-label="Comută modul întunecat" title="Mod întunecat">
       <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
       <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
@@ -188,6 +245,7 @@ a{color:var(--green)}
     <button class="tab on" id="tabChk" role="tab" aria-selected="true">Checklist săptămânal</button>
     <button class="tab" id="tabInv" role="tab" aria-selected="false">Toate exercițiile</button>
     <button class="tab" id="tabHist" role="tab" aria-selected="false">Istoric</button>
+    <button class="tab" id="tabWheel" role="tab" aria-selected="false">Roata Vieții</button>
   </div>
 
   <div id="viewChk">
@@ -207,7 +265,25 @@ a{color:var(--green)}
 
   <div id="viewInv" style="display:none"></div>
   <div id="viewHist" style="display:none"></div>
+  <div id="viewWheel" style="display:none"></div>
 </div>
+
+<div class="modalOverlay" id="cloudModal">
+  <div class="modalBox">
+    <button class="modalClose" id="cloudModalClose" aria-label="Închide">×</button>
+    <h3>☁ Sincronizare cloud</h3>
+    <div id="cloudContent"></div>
+  </div>
+</div>
+<div class="modalOverlay" id="backupModal">
+  <div class="modalBox">
+    <button class="modalClose" id="backupModalClose" aria-label="Închide">×</button>
+    <h3>🗄 Backup-uri locale</h3>
+    <div id="backupContent"></div>
+  </div>
+</div>
+<div class="toastContainer" id="toastContainer"></div>
+
 
 <div class="foot" id="foot">
   <div class="in">
@@ -434,7 +510,7 @@ async function toggleToday(x){
   history[day][idx]=!history[day][idx];
   if(!history[day][idx]) delete history[day][idx];
   if(Object.keys(history[day]).length===0) delete history[day];
-  await histStore.set(history);
+  await histStore.set(history); schedulePush();
   if(view==='chk') renderWeek(); else if(view==='inv') renderInv(); else if(view==='hist') renderHist();
 }
 
@@ -447,13 +523,13 @@ function metaHTML(x){
 
 async function toggleSel(i){
   sel[wk]=sel[wk]||{}; sel[wk][i]=!sel[wk][i]; if(!sel[wk][i]) delete sel[wk][i];
-  await store.set(sel); renderWeek();
+  await store.set(sel); schedulePush(); renderWeek();
 }
 
 async function toggleCustomSel(i){
   sel['custom']=sel['custom']||{};
   sel['custom'][i]=!sel['custom'][i]; if(!sel['custom'][i]) delete sel['custom'][i];
-  await store.set(sel); renderInv();
+  await store.set(sel); schedulePush(); renderInv();
 }
 
 function makeInfoBtn(text, steps){
@@ -497,7 +573,7 @@ function buildRow(x, i, on, onToggle, extraMetaHTML){
 
 function refreshFooter(){
   const footEl=document.getElementById('foot');
-  if(view==='hist'){ footEl.style.display='none'; return; }
+  if(view==='hist'||view==='wheel'){ footEl.style.display='none'; return; }
   footEl.style.display='';
   let d=0,p=0;
   if(view==='chk'){
@@ -561,9 +637,14 @@ function renderWeek(){
 document.getElementById('btnAllDaily').onclick=async()=>{
   sel[wk]=sel[wk]||{};
   currentList().forEach((x,i)=>{ if(isDaily(x[3])) sel[wk][i]=true; });
-  await store.set(sel); renderWeek();
+  await store.set(sel); schedulePush(); renderWeek();
 };
-document.getElementById('btnClear').onclick=async()=>{ delete sel[wk]; await store.set(sel); renderWeek(); };
+document.getElementById('btnClear').onclick=async()=>{
+  const prev = sel[wk] ? JSON.parse(JSON.stringify(sel[wk])) : null;
+  const label = isCustom() ? 'Selecția personalizată a fost golită' : `Săptămâna ${wk} a fost golită`;
+  delete sel[wk]; await store.set(sel); schedulePush(); renderWeek();
+  showToast(label, async()=>{ if(prev) sel[wk]=prev; else delete sel[wk]; await store.set(sel); schedulePush(); renderWeek(); });
+};
 
 /* ===== inventarul pe categorii — acum selectabil ===== */
 const CAT_ORDER=['Energetic','Fizic','Suflet/Natură','Mental/Jurnal','Terapeutic','Viziune','Părți Interioare','Relațional/Ancestral','Studiu'];
@@ -751,19 +832,25 @@ function renderHist(){
   const toShow=(histSelected && histSelected.startsWith(histYear+'-'+pad2(histMonth+1))) ? histSelected :
     (histYear===new Date().getFullYear()&&histMonth===new Date().getMonth()) ? todayStr : isoOf(histYear,histMonth,1);
   showHistDetail(toShow);
+
+  const backupLink=document.createElement('button');
+  backupLink.type='button'; backupLink.className='backupLink'; backupLink.textContent='🗄 Backup-uri locale';
+  backupLink.onclick=()=>{ renderBackupModal(); document.getElementById('backupModal').classList.add('show'); };
+  V.appendChild(backupLink);
 }
 
 /* ===== taburi ===== */
-const tC=document.getElementById('tabChk'), tI=document.getElementById('tabInv'), tH=document.getElementById('tabHist');
+const tC=document.getElementById('tabChk'), tI=document.getElementById('tabInv'), tH=document.getElementById('tabHist'), tW=document.getElementById('tabWheel');
 function setView(v){ view=v; hideInfo();
-  tC.classList.toggle('on',v==='chk'); tI.classList.toggle('on',v==='inv'); tH.classList.toggle('on',v==='hist');
-  tC.setAttribute('aria-selected',v==='chk'); tI.setAttribute('aria-selected',v==='inv'); tH.setAttribute('aria-selected',v==='hist');
+  tC.classList.toggle('on',v==='chk'); tI.classList.toggle('on',v==='inv'); tH.classList.toggle('on',v==='hist'); tW.classList.toggle('on',v==='wheel');
+  tC.setAttribute('aria-selected',v==='chk'); tI.setAttribute('aria-selected',v==='inv'); tH.setAttribute('aria-selected',v==='hist'); tW.setAttribute('aria-selected',v==='wheel');
   document.getElementById('viewChk').style.display=v==='chk'?'':'none';
   document.getElementById('viewInv').style.display=v==='inv'?'':'none';
   document.getElementById('viewHist').style.display=v==='hist'?'':'none';
-  if(v==='chk') renderWeek(); else if(v==='inv') renderInv(); else renderHist();
+  document.getElementById('viewWheel').style.display=v==='wheel'?'':'none';
+  if(v==='chk') renderWeek(); else if(v==='inv') renderInv(); else if(v==='hist') renderHist(); else renderWheel();
 }
-tC.onclick=()=>setView('chk'); tI.onclick=()=>setView('inv'); tH.onclick=()=>setView('hist');
+tC.onclick=()=>setView('chk'); tI.onclick=()=>setView('inv'); tH.onclick=()=>setView('hist'); tW.onclick=()=>setView('wheel');
 
 /* ===== temă (mod întunecat) ===== */
 const themeBtn = document.getElementById('themeBtn');
@@ -787,12 +874,369 @@ themeBtn.onclick=async()=>{
   applyTheme(saved || (prefersDark ? 'dark' : 'light'));
 })();
 
+/* ===== toast (info + undo) ===== */
+function showToast(message, restoreFn){
+  const container=document.getElementById('toastContainer');
+  const el=document.createElement('div'); el.className='toast';
+  el.innerHTML=`<span>${escapeHtml(message)}</span>`;
+  if(restoreFn){
+    const b=document.createElement('button'); b.type='button'; b.textContent='↺ Anulează';
+    b.onclick=()=>{ if(el._done) return; el._done=true; restoreFn(); el.remove(); };
+    el.appendChild(b);
+  }
+  container.appendChild(el);
+  setTimeout(()=>{ if(el._done) return; el._done=true; el.remove(); }, 6000);
+}
+
+/* ===== backup local automat ===== */
+const BACKUP_KEY='papapp_backups', BACKUP_MAX=7;
+function snapshotBlob(){ return JSON.stringify({sel, history, wheel}); }
+function saveDailyBackupIfNeeded(){
+  try{
+    const today=todayISO();
+    let backups={}; try{ backups=JSON.parse(localStorage.getItem(BACKUP_KEY)||'{}'); }catch(e){}
+    if(backups[today]) return;
+    backups[today]={ data: snapshotBlob(), savedAt: Date.now() };
+    const keys=Object.keys(backups).sort();
+    while(keys.length>BACKUP_MAX){ delete backups[keys.shift()]; }
+    localStorage.setItem(BACKUP_KEY, JSON.stringify(backups));
+  }catch(e){}
+}
+function loadBackups(){ try{ return JSON.parse(localStorage.getItem(BACKUP_KEY)||'{}'); }catch(e){ return {}; } }
+function renderBackupModal(){
+  const el=document.getElementById('backupContent');
+  const backups=loadBackups();
+  const keys=Object.keys(backups).sort().reverse();
+  if(!keys.length){ el.innerHTML='<p class="cloudNote">Încă nu există niciun backup local — se salvează automat unul pe zi, păstrăm ultimele 7.</p>'; return; }
+  el.innerHTML = `<p class="cloudNote">Un instantaneu salvat automat, o dată pe zi, doar în acest browser — o plasă de siguranță separată de sincronizarea cloud.</p>`
+    + keys.map(k=>{
+      const dt=new Date(backups[k].savedAt);
+      const time=fmtDateRo(k)+' · ora '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+      return `<div class="backupRow"><span>${time}</span><button type="button" data-restore="${k}">↺ Restaurează</button></div>`;
+    }).join('');
+  el.querySelectorAll('[data-restore]').forEach(b=>{
+    b.onclick=async()=>{
+      const k=b.dataset.restore;
+      if(!confirm('Restaurezi backup-ul din '+fmtDateRo(k)+'?\n\nDatele curente (plan, istoric, Roata Vieții) vor fi înlocuite cu acea versiune.')) return;
+      try{
+        const parsed=JSON.parse(backups[k].data);
+        sel=parsed.sel||{}; history=parsed.history||{}; wheel=parsed.wheel||defaultWheel();
+        await store.set(sel); await histStore.set(history); await wheelStore.set(wheel);
+        schedulePush();
+        rerenderActive();
+        document.getElementById('backupModal').classList.remove('show');
+        showToast('Backup restaurat din '+fmtDateRo(k));
+      }catch(e){ alert('Nu am putut restaura acest backup — pare corupt.'); }
+    };
+  });
+}
+function fmtDateRo(iso){ const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'}); }
+document.getElementById('backupModalClose').onclick=()=>document.getElementById('backupModal').classList.remove('show');
+document.getElementById('backupModal').addEventListener('click', e=>{ if(e.target.id==='backupModal') e.currentTarget.classList.remove('show'); });
+
+function rerenderActive(){
+  if(view==='chk') renderWeek(); else if(view==='inv') renderInv(); else if(view==='hist') renderHist(); else renderWheel();
+}
+
+/* ===== Roata Vieții ===== */
+let wheel = { categories: [] };
+let memW={};
+const wheelStore = {
+  async get(){ try{ if(window.storage){ const r=await window.storage.get('papapp_wheel'); return r?JSON.parse(r.value):null } }catch(e){}
+               try{ const v=localStorage.getItem('papapp_wheel'); if(v) return JSON.parse(v) }catch(e){}
+               return memW; },
+  async set(d){ memW=d; try{ if(window.storage){ await window.storage.set('papapp_wheel', JSON.stringify(d)) } }catch(e){}
+               try{ localStorage.setItem('papapp_wheel', JSON.stringify(d)) }catch(e){}
+               flashSaved(); }
+};
+function defaultWheel(){
+  return { categories: ['Sănătate','Relații și familie','Carieră','Bani și finanțe','Dezvoltare personală','Timp liber','Mediul de viață','Spiritualitate']
+    .map(name=>({ id:'w'+Math.random().toString(36).slice(2), name, scoreHistory:[] })) };
+}
+function wheelLastScore(cat){ const h=cat.scoreHistory||[]; return h.length? h[h.length-1].score : 0; }
+async function persistWheel(){ await wheelStore.set(wheel); schedulePush(); }
+
+function renderWheelSVG(){
+  const cats=wheel.categories, n=cats.length;
+  if(!n) return '<p class="cloudNote">Adaugă cel puțin o categorie ca să vezi roata.</p>';
+  const size=400, center=size/2, maxR=size/2-105;
+  const scores=cats.map(wheelLastScore);
+  let axis='', labels='', pts=[];
+  for(let i=0;i<n;i++){
+    const angle=(Math.PI*2*i/n)-Math.PI/2;
+    const r=(scores[i]/10)*maxR;
+    pts.push((center+r*Math.cos(angle))+','+(center+r*Math.sin(angle)));
+    const lx=center+maxR*Math.cos(angle), ly=center+maxR*Math.sin(angle);
+    axis+=`<line x1="${center}" y1="${center}" x2="${lx}" y2="${ly}" stroke="var(--line)" stroke-width="1"/>`;
+    const lr=maxR+20, lblx=center+lr*Math.cos(angle), lbly=center+lr*Math.sin(angle);
+    let anchor='middle'; if(Math.cos(angle)>0.3) anchor='start'; else if(Math.cos(angle)<-0.3) anchor='end';
+    labels+=`<text x="${lblx}" y="${lbly}" text-anchor="${anchor}" style="font-size:10px;fill:var(--ink);font-weight:600">${escapeHtml(cats[i].name)}</text>`;
+    labels+=`<text x="${lblx}" y="${lbly+12}" text-anchor="${anchor}" style="font-size:9.5px;fill:var(--muted)">${scores[i]||'–'}/10</text>`;
+  }
+  let rings='';
+  [2,4,6,8,10].forEach(v=>{
+    const r=(v/10)*maxR, p=[];
+    for(let i=0;i<n;i++){ const a=(Math.PI*2*i/n)-Math.PI/2; p.push((center+r*Math.cos(a))+','+(center+r*Math.sin(a))); }
+    rings+=`<polygon points="${p.join(' ')}" fill="none" stroke="var(--line)" stroke-width="1"/>`;
+  });
+  return `<svg viewBox="0 0 ${size} ${size}" style="width:100%;max-width:340px;display:block;margin:0 auto">${rings}${axis}<polygon points="${pts.join(' ')}" fill="var(--okbg)" stroke="var(--ok)" stroke-width="2"/>${labels}</svg>`;
+}
+
+function renderWheel(){
+  const V=document.getElementById('viewWheel'); V.innerHTML='';
+  document.getElementById('foot').style.display='none';
+  const intro=document.createElement('p');
+  intro.style.cssText='font-size:13px;color:var(--muted);margin:4px 0 14px;line-height:1.6';
+  intro.textContent='Versiunea digitală a exercițiului din Săptămâna 1 — reevaluează periodic fiecare domeniu și vezi cum se schimbă roata în timp.';
+  V.appendChild(intro);
+
+  const wrap=document.createElement('div'); wrap.className='wheelWrap'; wrap.innerHTML=renderWheelSVG();
+  V.appendChild(wrap);
+
+  wheel.categories.forEach(cat=>{
+    const card=document.createElement('div'); card.className='wheelCatCard';
+    const score=wheelLastScore(cat);
+    const hist=cat.scoreHistory||[];
+    card.innerHTML=`<div class="wheelCatHead"><span class="wheelCatName">${escapeHtml(cat.name)}</span><span class="wheelCatScore">${score||'–'}/10</span></div>
+      <div class="wheelCatActions">
+        <button type="button" class="btn" data-act="reeval">Reevaluează</button>
+        <button type="button" class="btn" data-act="hist">Istoric (${hist.length})</button>
+        <button type="button" class="btn" data-act="rename">Redenumește</button>
+        <button type="button" class="btn" data-act="del">Șterge</button>
+      </div>
+      <div class="wheelForm" data-form>
+        <label style="font-size:12.5px;color:var(--muted)">Scor (1–10) <input type="number" min="1" max="10" value="${score||5}" data-score></label>
+        <textarea placeholder="Notă (opțional) — ce vrei să schimbi aici?" data-note></textarea>
+        <div class="cloudActions"><button type="button" class="primary" data-save>Salvează</button><button type="button" data-cancel>Anulează</button></div>
+      </div>
+      <div class="wheelHistList" data-histlist>${hist.slice().reverse().map(h=>`<div>${fmtDateRo(h.date)}: <strong>${h.score}</strong>/10${h.note?' — '+escapeHtml(h.note):''}</div>`).join('') || '<div>Nicio reevaluare încă.</div>'}</div>`;
+    card.querySelector('[data-act="reeval"]').onclick=()=>card.querySelector('[data-form]').classList.toggle('show');
+    card.querySelector('[data-act="hist"]').onclick=()=>card.querySelector('[data-histlist]').classList.toggle('show');
+    card.querySelector('[data-cancel]').onclick=()=>card.querySelector('[data-form]').classList.remove('show');
+    card.querySelector('[data-save]').onclick=async()=>{
+      const sVal=Math.max(1,Math.min(10, +card.querySelector('[data-score]').value||5));
+      const note=card.querySelector('[data-note]').value.trim();
+      cat.scoreHistory=cat.scoreHistory||[];
+      cat.scoreHistory.push({ date: todayISO(), score: sVal, note });
+      await persistWheel(); renderWheel();
+    };
+    card.querySelector('[data-act="rename"]').onclick=async()=>{
+      const nn=prompt('Nume nou pentru această categorie:', cat.name);
+      if(nn && nn.trim()){ cat.name=nn.trim(); await persistWheel(); renderWheel(); }
+    };
+    card.querySelector('[data-act="del"]').onclick=async()=>{
+      if(!confirm('Ștergi categoria „'+cat.name+'" și tot istoricul ei?')) return;
+      const prevWheel=JSON.parse(JSON.stringify(wheel));
+      wheel.categories=wheel.categories.filter(c=>c.id!==cat.id);
+      await persistWheel(); renderWheel();
+      showToast('Categorie ștearsă', async()=>{ wheel=prevWheel; await persistWheel(); renderWheel(); });
+    };
+    V.appendChild(card);
+  });
+
+  const addBtn=document.createElement('button');
+  addBtn.type='button'; addBtn.className='btn addCatBtn'; addBtn.textContent='+ Adaugă o categorie';
+  addBtn.onclick=async()=>{
+    const name=prompt('Numele noii categorii (ex: „Sănătate", „Prietenii"):');
+    if(name && name.trim()){
+      wheel.categories.push({ id:'w'+Math.random().toString(36).slice(2), name:name.trim(), scoreHistory:[] });
+      await persistWheel(); renderWheel();
+    }
+  };
+  V.appendChild(addBtn);
+}
+
+/* ===== sincronizare cloud (Firebase — proiect reutilizat „checklist-activitati",
+   colecție separată users/{uid}/papillon/main, nu atinge documentul users/{uid}
+   folosit de Checklist Activități) ===== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyA9T1xk-J8fnzVTo5w4mWivO4i8PYi6JiA",
+  authDomain: "checklist-activitati.firebaseapp.com",
+  projectId: "checklist-activitati",
+  storageBucket: "checklist-activitati.firebasestorage.app",
+  messagingSenderId: "169010002087",
+  appId: "1:169010002087:web:efc2e6fc815744ad738382"
+};
+const SYNC_WRITER = Math.random().toString(36).slice(2) + Date.now();
+let fbApp=null, fbAuth=null, fbDb=null, fbUser=null, fbUnsub=null;
+let syncState='loading', syncErr='', lastSyncAt=null, pushTimer=null, applyingRemote=false;
+
+function papillonDocRef(){ const F=window.__FB; return F.doc(fbDb, 'users', fbUser.uid, 'papillon', 'main'); }
+
+function syncLabel(){
+  if(syncState==='on') return 'Sincronizat în cloud';
+  if(syncState==='pushing') return 'Se salvează…';
+  if(syncState==='error') return 'Eroare de sincronizare';
+  if(syncState==='ready') return 'Conectează-te pentru sincronizare';
+  if(syncState==='unavailable') return 'Cloud indisponibil';
+  return 'Cloud';
+}
+function updateCloudBtn(){
+  const b=document.getElementById('cloudBtn'); if(!b) return;
+  b.title=syncLabel();
+  b.classList.toggle('on', syncState==='on'||syncState==='pushing');
+  b.classList.toggle('err', syncState==='error'||syncState==='unavailable');
+}
+function fbErrText(e){
+  const code=(e&&e.code)||'';
+  if(code.indexOf('invalid-credential')>-1||code.indexOf('wrong-password')>-1||code.indexOf('user-not-found')>-1) return 'Email sau parolă greșite.';
+  if(code.indexOf('email-already-in-use')>-1) return 'Există deja un cont cu acest email — folosește „Autentifică-te".';
+  if(code.indexOf('weak-password')>-1) return 'Parola e prea scurtă (minim 6 caractere).';
+  if(code.indexOf('invalid-email')>-1) return 'Adresa de email nu pare validă.';
+  if(code.indexOf('network')>-1) return 'Fără conexiune la internet.';
+  if(code.indexOf('unauthorized-domain')>-1||code.indexOf('operation-not-allowed')>-1) return 'Domeniul nu e autorizat pentru autentificare.';
+  return (e&&e.message)?e.message:'Eroare necunoscută.';
+}
+
+function applyRemoteDoc(d){
+  try{
+    applyingRemote=true;
+    if(d.sel!==undefined) sel=JSON.parse(d.sel);
+    if(d.history!==undefined) history=JSON.parse(d.history);
+    if(d.wheel!==undefined) wheel=JSON.parse(d.wheel);
+    try{ localStorage.setItem('papapp_sel', JSON.stringify(sel)); }catch(e){}
+    try{ localStorage.setItem('papapp_history', JSON.stringify(history)); }catch(e){}
+    try{ localStorage.setItem('papapp_wheel', JSON.stringify(wheel)); }catch(e){}
+    rerenderActive();
+    applyingRemote=false; lastSyncAt=Date.now();
+    return true;
+  }catch(e){ applyingRemote=false; return false; }
+}
+async function pushNow(){
+  if(!fbUser||!fbDb||applyingRemote) return;
+  const F=window.__FB;
+  syncState='pushing'; updateCloudBtn();
+  try{
+    await F.setDoc(papillonDocRef(), {
+      sel: JSON.stringify(sel), history: JSON.stringify(history), wheel: JSON.stringify(wheel),
+      updatedAt: Date.now(), writer: SYNC_WRITER
+    });
+    lastSyncAt=Date.now(); syncState='on'; syncErr='';
+  }catch(e){ syncState='error'; syncErr=String(e&&e.message||e); }
+  updateCloudBtn(); renderCloudModal();
+}
+function schedulePush(){
+  if(!fbUser||applyingRemote) return;
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(pushNow, 1500);
+}
+function stopSync(){ if(fbUnsub){ try{fbUnsub();}catch(e){} fbUnsub=null; } clearTimeout(pushTimer); }
+
+async function startSync(){
+  const F=window.__FB; if(!F||!fbUser) return;
+  const ref=papillonDocRef();
+  try{
+    const snap=await F.getDoc(ref);
+    if(!snap.exists() || snap.data().sel===undefined){
+      await pushNow();
+    } else {
+      const remote=snap.data();
+      const when=remote.updatedAt ? new Date(remote.updatedAt).toLocaleString('ro-RO') : 'necunoscut';
+      const takeRemote=confirm('Ai deja date în cloud, salvate la '+when+'.\n\nOK → descarcă din cloud (înlocuiește ce ai pe acest dispozitiv)\nAnulează → încarcă datele de pe acest dispozitiv (înlocuiește cloud-ul)');
+      if(takeRemote){ applyRemoteDoc(remote); syncState='on'; } else { await pushNow(); }
+    }
+    stopSync();
+    fbUnsub=F.onSnapshot(ref, s=>{
+      if(!s.exists()) return;
+      const d=s.data();
+      if(d.sel===undefined || d.writer===SYNC_WRITER) return;
+      if(applyRemoteDoc(d)) showToast('Actualizat din cloud — date modificate pe alt dispozitiv');
+    }, err=>{ syncState='error'; syncErr=String(err.message||err); updateCloudBtn(); renderCloudModal(); });
+    if(syncState!=='error') syncState='on';
+  }catch(e){ syncState='error'; syncErr=String(e&&e.message||e); }
+  updateCloudBtn(); renderCloudModal();
+}
+
+document.addEventListener('fb-sdk-ready', ()=>{
+  const F=window.__FB;
+  try{
+    fbApp=F.initializeApp(FIREBASE_CONFIG);
+    fbAuth=F.getAuth(fbApp);
+    try{ fbDb=F.initializeFirestore(fbApp, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
+    catch(e2){ fbDb=F.getFirestore(fbApp); }
+    syncState='ready';
+    F.onAuthStateChanged(fbAuth, u=>{
+      fbUser=u;
+      if(u){ startSync(); } else { stopSync(); syncState='ready'; }
+      updateCloudBtn(); renderCloudModal();
+    });
+  }catch(e){ syncState='unavailable'; syncErr=String(e&&e.message||e); }
+  updateCloudBtn(); renderCloudModal();
+});
+document.addEventListener('fb-sdk-failed', ()=>{
+  syncState='unavailable'; syncErr=window.__FB_ERROR||'Nu am putut încărca librăria Firebase.';
+  updateCloudBtn(); renderCloudModal();
+});
+
+function renderCloudModal(){
+  const el=document.getElementById('cloudContent'); if(!el) return;
+  if(syncState==='unavailable'){
+    el.innerHTML=`<p class="cloudErr">Nu am putut încărca Firebase.</p><p class="cloudNote">${escapeHtml(syncErr)}</p><p class="cloudNote">Aplicația funcționează normal și fără cloud — datele rămân salvate local.</p>`;
+    return;
+  }
+  if(syncState==='loading'){ el.innerHTML='<p class="cloudNote">Se încarcă…</p>'; return; }
+  if(!fbUser){
+    el.innerHTML=`<p class="cloudNote">Autentifică-te cu același cont pe fiecare dispozitiv ca să ai aceleași date peste tot.</p>
+      <div class="cloudForm">
+        <label>Email <input type="email" id="cloudEmail" autocomplete="username"></label>
+        <label>Parolă <input type="password" id="cloudPass" autocomplete="current-password"></label>
+        <div class="cloudActions"><button type="button" class="primary" id="cloudSignin">Autentifică-te</button><button type="button" id="cloudSignup">Creează cont</button></div>
+        <p class="cloudErr" id="cloudError"></p>
+      </div>
+      <p class="cloudNote">Prima dată apeși „Creează cont" (parolă de minim 6 caractere). Pe celelalte dispozitive folosești „Autentifică-te".</p>`;
+    document.getElementById('cloudSignin').onclick=()=>cloudAuth(false);
+    document.getElementById('cloudSignup').onclick=()=>cloudAuth(true);
+    return;
+  }
+  const st=syncState==='on'?'Activ':syncState==='pushing'?'Se salvează…':syncState==='error'?'Eroare':'—';
+  el.innerHTML=`<p class="cloudNote">Conectat ca <strong>${escapeHtml(fbUser.email||'')}</strong></p>
+    <p class="cloudNote">Stare: ${st}${lastSyncAt?' · ultima sincronizare '+new Date(lastSyncAt).toLocaleTimeString('ro-RO'):''}</p>
+    ${syncState==='error'?'<p class="cloudErr">'+escapeHtml(syncErr)+'</p>':''}
+    <div class="cloudActions"><button type="button" class="primary" id="cloudPushnow">Sincronizează acum</button><button type="button" id="cloudSignout">Deconectează-te</button></div>
+    <p class="cloudNote">Modificările se salvează automat, la câteva secunde după fiecare schimbare.</p>`;
+  document.getElementById('cloudPushnow').onclick=()=>pushNow();
+  document.getElementById('cloudSignout').onclick=async()=>{ const F=window.__FB; stopSync(); try{ await F.signOut(fbAuth); }catch(e){} };
+}
+async function cloudAuth(isSignup){
+  const F=window.__FB;
+  const em=(document.getElementById('cloudEmail').value||'').trim();
+  const pw=document.getElementById('cloudPass').value||'';
+  const errEl=document.getElementById('cloudError');
+  if(!em||!pw){ errEl.textContent='Completează emailul și parola.'; return; }
+  try{
+    if(isSignup) await F.createUserWithEmailAndPassword(fbAuth, em, pw);
+    else await F.signInWithEmailAndPassword(fbAuth, em, pw);
+  }catch(err){ errEl.textContent=fbErrText(err); }
+}
+document.getElementById('cloudBtn').onclick=()=>{ renderCloudModal(); document.getElementById('cloudModal').classList.add('show'); };
+document.getElementById('cloudModalClose').onclick=()=>document.getElementById('cloudModal').classList.remove('show');
+document.getElementById('cloudModal').addEventListener('click', e=>{ if(e.target.id==='cloudModal') e.currentTarget.classList.remove('show'); });
+
 /* ===== start ===== */
 (async()=>{
   try{ sel=await store.get()||{} }catch(e){ sel={} }
   try{ history=await histStore.get()||{} }catch(e){ history={} }
+  try{ wheel=await wheelStore.get()||defaultWheel(); if(!wheel.categories) wheel=defaultWheel(); }catch(e){ wheel=defaultWheel(); }
   renderWeek(); renderInv();
+  saveDailyBackupIfNeeded();
 })();
+</script>
+<script type="module">
+  (async () => {
+    const V = '12.16.0';
+    try {
+      const [a, b, d] = await Promise.all([
+        import('https://www.gstatic.com/firebasejs/'+V+'/firebase-app.js'),
+        import('https://www.gstatic.com/firebasejs/'+V+'/firebase-auth.js'),
+        import('https://www.gstatic.com/firebasejs/'+V+'/firebase-firestore.js')
+      ]);
+      window.__FB = Object.assign({}, a, b, d);
+      document.dispatchEvent(new CustomEvent('fb-sdk-ready'));
+    } catch (e) {
+      window.__FB_ERROR = String(e && e.message ? e.message : e);
+      document.dispatchEvent(new CustomEvent('fb-sdk-failed'));
+    }
+  })();
 </script>
 </body>
 </html>
