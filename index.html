@@ -64,6 +64,9 @@ header .sub{color:var(--muted);font-size:13px;margin-top:2px}
 .wk{flex:0 0 auto;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink)}
 .wk.on{outline:2px solid var(--green);outline-offset:-1px;font-weight:600}
 .wk.custom{background:var(--custom-bg)!important;border-style:dashed;border-color:var(--custom-bd);font-weight:600}
+.wk.todayplan{background:var(--e3)!important;border-color:var(--amber);font-weight:600}
+.wk.planbtn{background:var(--card);border-style:dashed;color:var(--muted)}
+.wk.planbtn:hover{color:var(--green);border-color:var(--sage)}
 .wkhead{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:6px 0 16px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 .wkhead .theme{font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:600;color:var(--green)}
 .badge{display:inline-block;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:99px;color:var(--ink)}
@@ -231,6 +234,7 @@ a{color:var(--green)}
 /* ===== jurnal (formulare + tab) ===== */
 .jLabel{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-top:14px}
 .jLabel textarea{display:block;width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink);resize:vertical;min-height:54px}
+.jLabel input[type=date]{display:block;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
 .jListLabel{font-size:13px;font-weight:600;color:var(--ink);margin-top:14px}
 .jListRow{display:flex;gap:6px;margin-top:6px}
 .jListRow input{flex:1;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
@@ -484,7 +488,10 @@ const CUSTOM_WKS = [];
   }
 })();
 const isCustom = () => wk==='custom';
-const currentList = () => isCustom() ? CUSTOM : W[wk].x;
+const planKey = dateISO => 'plan:'+dateISO;
+const isPlanKey = k => typeof k==='string' && k.indexOf('plan:')===0;
+const planDateOf = k => k.slice(5);
+const currentList = () => (isCustom()||isPlanKey(wk)) ? CUSTOM : W[wk].x;
 const INFO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><line x1="12" y1="16.5" x2="12" y2="11.5"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
 const TODAY_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3M16 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M9 14l2 2 4-4"/></svg>';
 const CUSTOM_INDEX = new Map(CUSTOM.map((x,i)=>[x[0]+'|'+x[1], i]));
@@ -638,7 +645,7 @@ function refreshFooter(){
   if(view==='chk'){
     const s=sel[wk]||{};
     currentList().forEach((x,i)=>{ if(s[i]) (isDaily(x[3])?d+=x[4]:p+=x[4]); });
-    document.getElementById('footNote').textContent = isCustom() ? 'Selecție personalizată' : `Săptămâna ${wk} · ${W[wk].t}`;
+    document.getElementById('footNote').textContent = isPlanKey(wk) ? 'Plan — '+fmtDateRo(planDateOf(wk)) : isCustom() ? 'Selecție personalizată' : `Săptămâna ${wk} · ${W[wk].t}`;
   } else {
     const s=sel['custom']||{};
     CUSTOM.forEach((x,i)=>{ if(s[i]) (isDaily(x[3])?d+=x[4]:p+=x[4]); });
@@ -650,6 +657,14 @@ function refreshFooter(){
 
 function renderRail(){
   const r=document.getElementById('weekRail'); r.innerHTML='';
+  const todayKey = planKey(todayISO());
+  if(sel[todayKey] && Object.keys(sel[todayKey]).length){
+    const t=document.createElement('button'); t.className='wk todayplan'+(wk===todayKey?' on':'');
+    t.textContent='📅 Planul de azi';
+    t.setAttribute('role','tab'); t.setAttribute('aria-selected', wk===todayKey);
+    t.onclick=()=>{ wk=todayKey; renderWeek(); };
+    r.appendChild(t);
+  }
   for(let i=1;i<=12;i++){
     const b=document.createElement('button'); b.className='wk'+(i===wk?' on':'');
     b.style.background = ET[W[i].e][1]; b.textContent='S'+i;
@@ -662,26 +677,41 @@ function renderRail(){
   c.setAttribute('role','tab'); c.setAttribute('aria-selected', isCustom());
   c.onclick=()=>{ wk='custom'; renderWeek(); };
   r.appendChild(c);
+  const p=document.createElement('button'); p.className='wk planbtn';
+  p.textContent='+ Planifică o zi';
+  p.onclick=()=>openPlanModal();
+  r.appendChild(p);
 }
 
 function renderWeek(){
   renderRail();
   const bg=document.getElementById('wkBadge');
-  if(isCustom()){
+  const planDate = isPlanKey(wk) ? planDateOf(wk) : null;
+  const btnAllDaily = document.getElementById('btnAllDaily');
+  if(planDate){
+    document.getElementById('wkTheme').textContent = 'Planul tău — '+fmtDateRo(planDate);
+    bg.textContent = planDate===todayISO() ? 'Pregătit pentru azi' : 'Planificat în avans';
+    bg.className = 'badge custom'; bg.style.background='';
+    btnAllDaily.style.display='none';
+  } else if(isCustom()){
     document.getElementById('wkTheme').textContent = 'Selecție personalizată';
     bg.textContent = 'Alege liber, din toate cele 12 săptămâni';
     bg.className = 'badge custom'; bg.style.background='';
+    btnAllDaily.style.display='';
   } else {
     document.getElementById('wkTheme').textContent = `Săptămâna ${wk} — ${W[wk].t}`;
     bg.textContent=ET[W[wk].e][0]; bg.className='badge'; bg.style.background=ET[W[wk].e][1];
+    btnAllDaily.style.display='';
   }
-  document.getElementById('btnAllDaily').textContent = isCustom() ? 'Selectează toate exercițiile zilnice' : 'Selectează protocolul zilnic';
-  document.getElementById('btnClear').textContent = isCustom() ? 'Golește selecția' : 'Golește săptămâna';
+  if(!planDate) btnAllDaily.textContent = isCustom() ? 'Selectează toate exercițiile zilnice' : 'Selectează protocolul zilnic';
+  document.getElementById('btnClear').textContent = planDate ? 'Golește planul' : (isCustom() ? 'Golește selecția' : 'Golește săptămâna');
   const L=document.getElementById('lists'); L.innerHTML='';
   const s=sel[wk]||{};
-  const list = currentList();
+  const baseItems = planDate
+    ? Object.keys(s).filter(i=>s[i]).map(i=>[CUSTOM[+i], +i])
+    : currentList().map((x,i)=>[x,i]);
   MOMENTS.forEach(m=>{
-    const items = list.map((x,i)=>[x,i]).filter(([x])=>x[2]===m);
+    const items = baseItems.filter(([x])=>x[2]===m);
     if(!items.length) return;
     const g=document.createElement('div'); g.className='grp';
     g.innerHTML=`<h2>${m}</h2><span class="hint">${m==='Punctual'?'o dată în această săptămână':m==='Flexibil'?'după frecvența indicată':''}</span>`;
@@ -690,6 +720,16 @@ function renderWeek(){
       L.appendChild(buildRow(x, i, !!s[i], ()=>toggleSel(i)));
     });
   });
+  if(planDate){
+    if(!baseItems.length){
+      const empty=document.createElement('p'); empty.className='cloudNote'; empty.textContent='Planul e gol încă — adaugă exerciții mai jos.';
+      L.appendChild(empty);
+    }
+    const addBtn=document.createElement('button');
+    addBtn.type='button'; addBtn.className='btn addCatBtn'; addBtn.textContent='+ Adaugă exercițiu la plan';
+    addBtn.onclick=()=>openAddToPlanModal(wk);
+    L.appendChild(addBtn);
+  }
   refreshFooter();
 }
 
@@ -700,7 +740,7 @@ document.getElementById('btnAllDaily').onclick=async()=>{
 };
 document.getElementById('btnClear').onclick=async()=>{
   const prev = sel[wk] ? JSON.parse(JSON.stringify(sel[wk])) : null;
-  const label = isCustom() ? 'Selecția personalizată a fost golită' : `Săptămâna ${wk} a fost golită`;
+  const label = isPlanKey(wk) ? 'Planul a fost golit' : isCustom() ? 'Selecția personalizată a fost golită' : `Săptămâna ${wk} a fost golită`;
   delete sel[wk]; await store.set(sel); schedulePush(); renderWeek();
   showToast(label, async()=>{ if(prev) sel[wk]=prev; else delete sel[wk]; await store.set(sel); schedulePush(); renderWeek(); });
 };
@@ -1147,6 +1187,89 @@ function openArtifactForm(x, idx, aDef){
 document.getElementById('journalModalClose').onclick = () => document.getElementById('journalModal').classList.remove('show');
 document.getElementById('journalModal').addEventListener('click', e=>{ if(e.target.id==='journalModal') e.currentTarget.classList.remove('show'); });
 
+/* ===== planificare în avans (una sau mai multe zile) ===== */
+function nextWeekdayISO(targetDow){
+  const d=new Date(); let add=(targetDow - d.getDay() + 7) % 7; if(add===0) add=7;
+  d.setDate(d.getDate()+add); return isoOf(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function planCatPickerHTML(existing){
+  return CAT_ORDER.map(cat=>{
+    const idxs = CUSTOM.map((_,i)=>i).filter(i=>CUSTOM[i][1]===cat);
+    if(!idxs.length) return '';
+    return `<div class="cat" style="margin-top:10px">${escapeHtml(cat)}</div>` + idxs.map(i=>{
+      const x=CUSTOM[i]; const on = !!existing[i];
+      return `<label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13.5px;cursor:pointer"><input type="checkbox" data-planidx="${i}" ${on?'checked':''}> <span style="flex:1">${escapeHtml(x[0])}</span><span class="chip t">${x[4]} min</span></label>`;
+    }).join('');
+  }).join('');
+}
+function openPlanModal(){
+  const modal=document.getElementById('journalModal');
+  const body=document.getElementById('journalModalBody');
+  document.getElementById('journalModalTitle').textContent='📅 Planifică o zi';
+  const tomorrow = (()=>{ const d=new Date(); d.setDate(d.getDate()+1); return isoOf(d.getFullYear(),d.getMonth(),d.getDate()); })();
+  let currentDate = tomorrow;
+  body.innerHTML = `
+    <label class="jLabel">Pentru ce zi?<input type="date" id="planDateInput" value="${currentDate}" min="${todayISO()}"></label>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button type="button" class="btn" id="qkTomorrow">Mâine</button>
+      <button type="button" class="btn" id="qkSat">Sâmbătă</button>
+      <button type="button" class="btn" id="qkSun">Duminică</button>
+    </div>
+    <div class="jListLabel" style="margin-top:16px">Exerciții pentru această zi</div>
+    <div id="planPickerList" style="max-height:38vh;overflow-y:auto;margin-top:4px"></div>
+    <div class="cloudActions"><button type="button" class="primary" id="planSave">Salvează planul</button><button type="button" id="planCancel">Anulează</button></div>`;
+  modal.classList.add('show');
+
+  function renderPicker(){
+    document.getElementById('planPickerList').innerHTML = planCatPickerHTML(sel[planKey(currentDate)] || {});
+  }
+  function setDate(d){ currentDate=d; document.getElementById('planDateInput').value=d; renderPicker(); }
+  document.getElementById('qkTomorrow').onclick=()=>setDate(tomorrow);
+  document.getElementById('qkSat').onclick=()=>setDate(nextWeekdayISO(6));
+  document.getElementById('qkSun').onclick=()=>setDate(nextWeekdayISO(0));
+  document.getElementById('planDateInput').onchange=e=>setDate(e.target.value);
+  renderPicker();
+
+  document.getElementById('planCancel').onclick=()=>modal.classList.remove('show');
+  document.getElementById('planSave').onclick=async()=>{
+    const key=planKey(currentDate);
+    const newSel={};
+    body.querySelectorAll('[data-planidx]').forEach(c=>{ if(c.checked) newSel[c.dataset.planidx]=true; });
+    if(Object.keys(newSel).length) sel[key]=newSel; else delete sel[key];
+    await store.set(sel); schedulePush();
+    modal.classList.remove('show');
+    wk=key; setView('chk');
+    showToast('Plan salvat pentru '+fmtDateRo(currentDate));
+  };
+}
+function openAddToPlanModal(planKeyStr){
+  const modal=document.getElementById('journalModal');
+  const body=document.getElementById('journalModalBody');
+  document.getElementById('journalModalTitle').textContent='+ Adaugă exercițiu la plan';
+  function render(){
+    const s=sel[planKeyStr]||{};
+    const remaining = CAT_ORDER.map(cat=>{
+      const idxs=CUSTOM.map((_,i)=>i).filter(i=>CUSTOM[i][1]===cat && !s[i]);
+      if(!idxs.length) return '';
+      return `<div class="cat" style="margin-top:10px">${escapeHtml(cat)}</div>` + idxs.map(i=>{
+        const x=CUSTOM[i];
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13.5px"><span style="flex:1">${escapeHtml(x[0])}</span><span class="chip t">${x[4]} min</span><button type="button" class="btn" data-addidx="${i}" style="padding:4px 10px">+ Adaugă</button></div>`;
+      }).join('');
+    }).join('').trim();
+    body.innerHTML = (remaining || '<p class="cloudNote">Toate exercițiile sunt deja în plan.</p>') + `<div class="cloudActions" style="margin-top:14px"><button type="button" id="addDoneBtn">Gata</button></div>`;
+    body.querySelectorAll('[data-addidx]').forEach(b=>{
+      b.onclick=async()=>{
+        sel[planKeyStr]=sel[planKeyStr]||{}; sel[planKeyStr][b.dataset.addidx]=true;
+        await store.set(sel); schedulePush();
+        render();
+      };
+    });
+    document.getElementById('addDoneBtn').onclick=()=>{ modal.classList.remove('show'); renderWeek(); };
+  }
+  render();
+  modal.classList.add('show');
+}
+
 function renderJurnal(){
   const V = document.getElementById('viewJurnal'); V.innerHTML='';
   document.getElementById('foot').style.display='none';
@@ -1472,6 +1595,8 @@ document.getElementById('cloudModal').addEventListener('click', e=>{ if(e.target
   try{ history=await histStore.get()||{} }catch(e){ history={} }
   try{ wheel=await wheelStore.get()||defaultWheel(); if(!wheel.categories) wheel=defaultWheel(); }catch(e){ wheel=defaultWheel(); }
   try{ artifacts=await artifactsStore.get()||{}; }catch(e){ artifacts={}; }
+  const todayKey = planKey(todayISO());
+  if(sel[todayKey] && Object.keys(sel[todayKey]).length) wk = todayKey;
   renderWeek(); renderInv();
   saveDailyBackupIfNeeded();
 })();
