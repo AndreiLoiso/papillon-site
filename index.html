@@ -198,6 +198,19 @@ a{color:var(--green)}
 .addCatBtn{margin-top:6px}
 
 /* ===== cloud sync ===== */
+.searchBtn{flex:0 0 auto;width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;display:grid;place-items:center;margin-left:6px}
+.searchBtn:hover{background:var(--okbg);color:var(--green)}
+.searchBtn svg{width:17px;height:17px}
+.searchInput{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:14px;background:var(--paper);color:var(--ink)}
+.searchInput::placeholder{color:var(--muted)}
+.searchResults{margin-top:12px;max-height:50vh;overflow-y:auto}
+.searchItem{display:block;padding:10px 4px;text-decoration:none;color:var(--ink);border-top:1px solid var(--line)}
+.searchItem:first-child{border-top:none}
+.searchItem:hover{background:var(--okbg)}
+.searchItem .sName{display:block;font-size:14px;font-weight:500}
+.searchItem .sMeta{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.searchItem .sOther{text-decoration:underline;cursor:pointer}
+.searchEmpty{padding:10px 4px;font-size:13px;color:var(--muted)}
 .cloudBtn{flex:0 0 auto;width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;display:grid;place-items:center;position:relative}
 .cloudBtn:hover{background:var(--okbg)}
 .cloudBtn svg{width:17px;height:17px}
@@ -214,6 +227,26 @@ a{color:var(--green)}
 .cloudActions button:hover{opacity:.9}
 .cloudErr{color:#B0503F;font-size:12.5px;margin-top:8px;min-height:1em}
 .cloudNote{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+/* ===== jurnal (formulare + tab) ===== */
+.jLabel{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-top:14px}
+.jLabel textarea{display:block;width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink);resize:vertical;min-height:54px}
+.jListLabel{font-size:13px;font-weight:600;color:var(--ink);margin-top:14px}
+.jListRow{display:flex;gap:6px;margin-top:6px}
+.jListRow input{flex:1;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
+.jRemoveItem{border:1px solid var(--line);background:var(--card);border-radius:8px;width:32px;color:var(--muted);cursor:pointer}
+.jRemoveItem:hover{background:var(--okbg);color:#B0503F}
+.prevEntry{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:12.5px}
+.prevLabel{font-weight:600;color:var(--muted);margin-bottom:4px}
+.prevQA{margin:3px 0;color:var(--ink)}
+.prevQA b{color:var(--muted);font-weight:600}
+.jEntryCard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+.jEntryDate{font-weight:600;font-size:13.5px;margin-bottom:6px}
+.jArtCard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.jArtName{font-weight:600;font-family:'Fraunces',Georgia,serif;color:var(--green)}
+.jArtVal{font-size:13.5px;margin-top:6px;line-height:1.5}
+.jArtCards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+@media (max-width:560px){ .jArtCards{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -223,6 +256,9 @@ a{color:var(--green)}
     <a class="navlink on" href="index.html">Planificator</a>
     <a class="navlink" href="ghid-complet.html">Ghid Complet</a>
     <a class="navlink" href="ghid-rapid.html">Ghid Rapid</a>
+    <button class="searchBtn" id="searchBtn" aria-label="Caută un exercițiu" title="Caută">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
     <button class="cloudBtn" id="cloudBtn" aria-label="Sincronizare cloud" title="Cloud">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.4-8.98A5.5 5.5 0 0 1 17.2 8.2 4 4 0 0 1 17 16H7Z"/></svg>
       <span class="dot"></span>
@@ -246,6 +282,7 @@ a{color:var(--green)}
     <button class="tab" id="tabInv" role="tab" aria-selected="false">Toate exercițiile</button>
     <button class="tab" id="tabHist" role="tab" aria-selected="false">Istoric</button>
     <button class="tab" id="tabWheel" role="tab" aria-selected="false">Roata Vieții</button>
+    <button class="tab" id="tabJurnal" role="tab" aria-selected="false">Jurnal</button>
   </div>
 
   <div id="viewChk">
@@ -266,8 +303,25 @@ a{color:var(--green)}
   <div id="viewInv" style="display:none"></div>
   <div id="viewHist" style="display:none"></div>
   <div id="viewWheel" style="display:none"></div>
+  <div id="viewJurnal" style="display:none"></div>
 </div>
 
+<div class="modalOverlay" id="journalModal">
+  <div class="modalBox">
+    <button class="modalClose" id="journalModalClose" aria-label="Închide">×</button>
+    <h3 id="journalModalTitle">Jurnal</h3>
+    <div id="journalModalBody"></div>
+  </div>
+</div>
+
+<div class="modalOverlay" id="searchModal">
+  <div class="modalBox">
+    <button class="modalClose" id="searchModalClose" aria-label="Închide">×</button>
+    <h3>🔎 Caută un exercițiu</h3>
+    <input type="text" class="searchInput" id="searchInput" placeholder="Ex: Formula Magică, Roata Vieții...">
+    <div class="searchResults" id="searchResults"></div>
+  </div>
+</div>
 <div class="modalOverlay" id="cloudModal">
   <div class="modalBox">
     <button class="modalClose" id="cloudModalClose" aria-label="Închide">×</button>
@@ -471,7 +525,7 @@ function dayTotal(dateStr){
   const h=history[dateStr]; const r={min:0,count:0,corp:0,suflet:0,minte:0,items:[]};
   if(!h) return r;
   Object.keys(h).forEach(k=>{
-    if(!h[k]) return;
+    if(!isEntryDone(h[k])) return;
     const x=CUSTOM[+k]; if(!x) return;
     r.min+=x[4]; r.count++; r.items.push(x);
     if(x[5]==='Corp') r.corp++; else if(x[5]==='Suflet') r.suflet++; else r.minte++;
@@ -506,9 +560,13 @@ function monthCompletionPct(year,month){
 
 async function toggleToday(x){
   const idx=customIndexOf(x); const day=todayISO();
+  const jDef = findJournalDef(x);
+  const aDef = findArtifactDef(x);
+  if(jDef){ openJournalForm(x, idx, jDef); return; }
+  if(aDef){ openArtifactForm(x, idx, aDef); return; }
   history[day]=history[day]||{};
-  history[day][idx]=!history[day][idx];
-  if(!history[day][idx]) delete history[day][idx];
+  const wasDone = isEntryDone(history[day][idx]);
+  if(wasDone) delete history[day][idx]; else history[day][idx]=true;
   if(Object.keys(history[day]).length===0) delete history[day];
   await histStore.set(history); schedulePush();
   if(view==='chk') renderWeek(); else if(view==='inv') renderInv(); else if(view==='hist') renderHist();
@@ -543,11 +601,12 @@ function makeInfoBtn(text, steps){
 
 function makeTodayBtn(x){
   const idx=customIndexOf(x);
-  const doneToday=!!(history[todayISO()]||{})[idx];
+  const doneToday=isEntryDone((history[todayISO()]||{})[idx]);
+  const hasForm = !!(findJournalDef(x) || findArtifactDef(x));
   const b=document.createElement('button');
   b.type='button'; b.className='todayBtn'+(doneToday?' on':'');
-  b.setAttribute('aria-label', doneToday?'Bifat azi — click pentru a anula':'Bifează ca făcut azi');
-  b.title = doneToday?'Făcut azi':'Marchează ca făcut azi';
+  const label = hasForm ? (doneToday?'Vezi/editează intrarea de azi':'Completează jurnalul pentru azi') : (doneToday?'Bifat azi — click pentru a anula':'Bifează ca făcut azi');
+  b.setAttribute('aria-label', label); b.title = label;
   b.innerHTML=TODAY_SVG;
   b.addEventListener('click',(e)=>{ e.stopPropagation(); toggleToday(x); });
   return b;
@@ -573,7 +632,7 @@ function buildRow(x, i, on, onToggle, extraMetaHTML){
 
 function refreshFooter(){
   const footEl=document.getElementById('foot');
-  if(view==='hist'||view==='wheel'){ footEl.style.display='none'; return; }
+  if(view==='hist'||view==='wheel'||view==='jurnal'){ footEl.style.display='none'; return; }
   footEl.style.display='';
   let d=0,p=0;
   if(view==='chk'){
@@ -840,17 +899,15 @@ function renderHist(){
 }
 
 /* ===== taburi ===== */
-const tC=document.getElementById('tabChk'), tI=document.getElementById('tabInv'), tH=document.getElementById('tabHist'), tW=document.getElementById('tabWheel');
+const tC=document.getElementById('tabChk'), tI=document.getElementById('tabInv'), tH=document.getElementById('tabHist'), tW=document.getElementById('tabWheel'), tJ=document.getElementById('tabJurnal');
+const ALL_TABS = {chk:tC, inv:tI, hist:tH, wheel:tW, jurnal:tJ};
+const ALL_VIEWS = {chk:'viewChk', inv:'viewInv', hist:'viewHist', wheel:'viewWheel', jurnal:'viewJurnal'};
 function setView(v){ view=v; hideInfo();
-  tC.classList.toggle('on',v==='chk'); tI.classList.toggle('on',v==='inv'); tH.classList.toggle('on',v==='hist'); tW.classList.toggle('on',v==='wheel');
-  tC.setAttribute('aria-selected',v==='chk'); tI.setAttribute('aria-selected',v==='inv'); tH.setAttribute('aria-selected',v==='hist'); tW.setAttribute('aria-selected',v==='wheel');
-  document.getElementById('viewChk').style.display=v==='chk'?'':'none';
-  document.getElementById('viewInv').style.display=v==='inv'?'':'none';
-  document.getElementById('viewHist').style.display=v==='hist'?'':'none';
-  document.getElementById('viewWheel').style.display=v==='wheel'?'':'none';
-  if(v==='chk') renderWeek(); else if(v==='inv') renderInv(); else if(v==='hist') renderHist(); else renderWheel();
+  Object.keys(ALL_TABS).forEach(k=>{ ALL_TABS[k].classList.toggle('on', k===v); ALL_TABS[k].setAttribute('aria-selected', k===v); });
+  Object.keys(ALL_VIEWS).forEach(k=>{ document.getElementById(ALL_VIEWS[k]).style.display = k===v ? '' : 'none'; });
+  if(v==='chk') renderWeek(); else if(v==='inv') renderInv(); else if(v==='hist') renderHist(); else if(v==='wheel') renderWheel(); else renderJurnal();
 }
-tC.onclick=()=>setView('chk'); tI.onclick=()=>setView('inv'); tH.onclick=()=>setView('hist'); tW.onclick=()=>setView('wheel');
+tC.onclick=()=>setView('chk'); tI.onclick=()=>setView('inv'); tH.onclick=()=>setView('hist'); tW.onclick=()=>setView('wheel'); tJ.onclick=()=>setView('jurnal');
 
 /* ===== temă (mod întunecat) ===== */
 const themeBtn = document.getElementById('themeBtn');
@@ -890,7 +947,7 @@ function showToast(message, restoreFn){
 
 /* ===== backup local automat ===== */
 const BACKUP_KEY='papapp_backups', BACKUP_MAX=7;
-function snapshotBlob(){ return JSON.stringify({sel, history, wheel}); }
+function snapshotBlob(){ return JSON.stringify({sel, history, wheel, artifacts}); }
 function saveDailyBackupIfNeeded(){
   try{
     const today=todayISO();
@@ -920,8 +977,8 @@ function renderBackupModal(){
       if(!confirm('Restaurezi backup-ul din '+fmtDateRo(k)+'?\n\nDatele curente (plan, istoric, Roata Vieții) vor fi înlocuite cu acea versiune.')) return;
       try{
         const parsed=JSON.parse(backups[k].data);
-        sel=parsed.sel||{}; history=parsed.history||{}; wheel=parsed.wheel||defaultWheel();
-        await store.set(sel); await histStore.set(history); await wheelStore.set(wheel);
+        sel=parsed.sel||{}; history=parsed.history||{}; wheel=parsed.wheel||defaultWheel(); artifacts=parsed.artifacts||{};
+        await store.set(sel); await histStore.set(history); await wheelStore.set(wheel); await artifactsStore.set(artifacts);
         schedulePush();
         rerenderActive();
         document.getElementById('backupModal').classList.remove('show');
@@ -935,7 +992,202 @@ document.getElementById('backupModalClose').onclick=()=>document.getElementById(
 document.getElementById('backupModal').addEventListener('click', e=>{ if(e.target.id==='backupModal') e.currentTarget.classList.remove('show'); });
 
 function rerenderActive(){
-  if(view==='chk') renderWeek(); else if(view==='inv') renderInv(); else if(view==='hist') renderHist(); else renderWheel();
+  if(view==='chk') renderWeek(); else if(view==='inv') renderInv(); else if(view==='hist') renderHist(); else if(view==='wheel') renderWheel(); else renderJurnal();
+}
+
+/* ===== jurnal: definiții (întrebările reale din ghid) + artefacte personale ===== */
+const JOURNAL_DEFS = [
+  { id:'seara5', type:'fixed',
+    match:[['Cele 5 întrebări de seară (jurnal)','Mental/Jurnal']],
+    questions:['Ce am realizat astăzi?','Am obținut cel mai important rezultat al meu?','Ce am învățat?','Ce pot îmbunătăți?','Trei lucruri/oameni pentru care sunt recunoscător astăzi — le mulțumesc'] },
+  { id:'seara7', type:'fixed',
+    match:[['Cele 7 întrebări de seară (include 10 beneficii + 3 lucruri care îmi plac la mine)','Mental/Jurnal'],['Cele 7 întrebări de seară','Mental/Jurnal']],
+    questions:['Ce am realizat astăzi?','Am obținut cel mai important rezultat al meu?','Ce am învățat?','Ce pot îmbunătăți?','Trei lucruri/oameni pentru care sunt recunoscător astăzi — le mulțumesc','Ce m-a enervat/deranjat astăzi? Notează situația și câteva beneficii găsite','3 lucruri/aspecte care îmi plac la mine'] },
+  { id:'echilibru-simplu', type:'list',
+    match:[['Echilibrarea percepțiilor (min. 1 eveniment/zi)','Terapeutic'],['Echilibrarea percepțiilor (continuare)','Terapeutic']],
+    eventLabel:'Evenimentul perceput ca negativ sau frustrant azi', listLabel:'Beneficiu găsit', listMin:3 },
+  { id:'echilibru-complet', type:'list',
+    match:[['Echilibrarea percepțiilor completă (30–50 beneficii)','Terapeutic']],
+    eventLabel:'Evenimentul / persoana aleasă pentru procesul complet', listLabel:'Beneficiu găsit', listMin:30 },
+  { id:'rolul-tau', type:'freetext',
+    match:[['Reflecție: rolul tău (ce ți-a plăcut între 7–14 ani)','Viziune']],
+    freetextLabel:'Ce activități te pasionau cu adevărat între 7 și 14 ani?' }
+];
+const PERSISTENT_ARTIFACTS = [
+  { id:'formula', label:'Formula Magică', freetextLabel:'Formula ta (afirmație scurtă, la timpul prezent)',
+    match:[['Compunerea Formulei Magice personale (din conștientizări)','Viziune'],['Actualizarea Formulei Magice cu frazele Părților','Viziune'],['Actualizarea Formulei Magice cu noile conștientizări','Viziune']] },
+  { id:'spi', label:'SPI — Sistemul Priorităților Intrinseci', freetextLabel:'Prioritățile tale (2–3, ca zone de viață, nu sarcini punctuale)',
+    match:[['Definirea SPI — Sistemul Priorităților Intrinseci','Viziune']] }
+];
+function findJournalDef(x){ return JOURNAL_DEFS.find(d => d.match.some(m => m[0]===x[0] && m[1]===x[1])); }
+function findArtifactDef(x){ return PERSISTENT_ARTIFACTS.find(d => d.match.some(m => m[0]===x[0] && m[1]===x[1])); }
+function isEntryDone(v){ return v===true || !!(v && typeof v==='object' && v.done); }
+
+let artifacts = {};
+let memAr={};
+const artifactsStore = {
+  async get(){ try{ if(window.storage){ const r=await window.storage.get('papapp_artifacts'); return r?JSON.parse(r.value):{} } }catch(e){}
+               try{ const v=localStorage.getItem('papapp_artifacts'); if(v) return JSON.parse(v) }catch(e){}
+               return memAr; },
+  async set(d){ memAr=d; try{ if(window.storage){ await window.storage.set('papapp_artifacts', JSON.stringify(d)) } }catch(e){}
+               try{ localStorage.setItem('papapp_artifacts', JSON.stringify(d)) }catch(e){}
+               flashSaved(); }
+};
+
+function journalToPlainText(jDef, journal){
+  if(!journal) return '';
+  if(journal.type==='fixed') return (journal.answers||[]).join(' ');
+  if(journal.type==='list') return (journal.event||'')+' '+(journal.items||[]).join(' ');
+  if(journal.type==='freetext') return journal.text||'';
+  return '';
+}
+function renderJournalReadonly(jDef, journal){
+  if(!jDef || !journal) return '';
+  if(journal.type==='fixed'){
+    return jDef.questions.map((q,i)=>journal.answers[i]?`<div class="prevQA"><b>${escapeHtml(q)}</b><br>${escapeHtml(journal.answers[i])}</div>`:'').join('');
+  } else if(journal.type==='list'){
+    return `<div class="prevQA"><b>${escapeHtml(jDef.eventLabel)}</b><br>${escapeHtml(journal.event||'—')}</div><div class="prevQA">${(journal.items||[]).map(it=>'• '+escapeHtml(it)).join('<br>')}</div>`;
+  }
+  return `<div class="prevQA">${escapeHtml(journal.text||'')}</div>`;
+}
+function findPreviousJournalEntry(journalId, excludeDate){
+  const dates = Object.keys(history).filter(d=>d!==excludeDate).sort().reverse();
+  for(const d of dates){
+    const h = history[d];
+    for(const k in h){
+      const v = h[k];
+      if(v && typeof v==='object' && v.journalId===journalId && v.journal) return {date:d, journal:v.journal};
+    }
+  }
+  return null;
+}
+function jListRowHtml(val){ return `<div class="jListRow"><input type="text" value="${escapeHtml(val)}"><button type="button" class="jRemoveItem" aria-label="Șterge">×</button></div>`; }
+
+function openJournalForm(x, idx, jDef){
+  const day = todayISO();
+  const existing = history[day] && history[day][idx];
+  const existingJournal = (existing && typeof existing==='object' && existing.journal) || null;
+  const prev = findPreviousJournalEntry(jDef.id, day);
+  const modal = document.getElementById('journalModal');
+  const body = document.getElementById('journalModalBody');
+  document.getElementById('journalModalTitle').textContent = x[0];
+  let html = '';
+  if(prev) html += `<div class="prevEntry"><div class="prevLabel">Ce ai scris ${fmtDateRo(prev.date)}:</div>${renderJournalReadonly(jDef, prev.journal)}</div>`;
+  if(jDef.type==='fixed'){
+    html += jDef.questions.map((q,i)=>`<label class="jLabel">${escapeHtml(q)}<textarea data-qi="${i}">${escapeHtml((existingJournal&&existingJournal.answers&&existingJournal.answers[i])||'')}</textarea></label>`).join('');
+  } else if(jDef.type==='list'){
+    const items = (existingJournal && existingJournal.items) || [];
+    html += `<label class="jLabel">${escapeHtml(jDef.eventLabel)}<textarea id="jEvent">${escapeHtml((existingJournal&&existingJournal.event)||'')}</textarea></label>`;
+    html += `<div class="jListLabel">${escapeHtml(jDef.listLabel)} — <span id="jListCount">${items.length}</span>${jDef.listMin?'/'+jDef.listMin:''}</div>`;
+    html += `<div id="jListItems">${items.map(it=>jListRowHtml(it)).join('')}</div>`;
+    html += `<button type="button" class="btn addCatBtn" id="jAddItem">+ Adaugă</button>`;
+  } else {
+    html += `<label class="jLabel">${escapeHtml(jDef.freetextLabel)}<textarea id="jFreetext">${escapeHtml((existingJournal&&existingJournal.text)||'')}</textarea></label>`;
+  }
+  html += `<div class="cloudActions"><button type="button" class="primary" id="jSave">Salvează</button>${existingJournal?'<button type="button" id="jDelete">Șterge intrarea</button>':'<button type="button" id="jCancel">Anulează</button>'}</div>`;
+  body.innerHTML = html;
+  modal.classList.add('show');
+
+  if(jDef.type==='list'){
+    const updateCount=()=>{ document.getElementById('jListCount').textContent = body.querySelectorAll('.jListRow').length; };
+    document.getElementById('jAddItem').onclick = () => {
+      document.getElementById('jListItems').insertAdjacentHTML('beforeend', jListRowHtml(''));
+      updateCount();
+      const rows = body.querySelectorAll('.jListRow input'); rows[rows.length-1].focus();
+    };
+    body.addEventListener('click', e=>{ const rm=e.target.closest('.jRemoveItem'); if(rm){ rm.closest('.jListRow').remove(); updateCount(); } });
+  }
+  document.getElementById('jSave').onclick = async () => {
+    let journal;
+    if(jDef.type==='fixed') journal = { type:'fixed', answers: Array.from(body.querySelectorAll('[data-qi]')).map(t=>t.value.trim()) };
+    else if(jDef.type==='list') journal = { type:'list', event: document.getElementById('jEvent').value.trim(), items: Array.from(body.querySelectorAll('.jListRow input')).map(i=>i.value.trim()).filter(Boolean) };
+    else journal = { type:'freetext', text: document.getElementById('jFreetext').value.trim() };
+    history[day] = history[day] || {};
+    history[day][idx] = { done:true, journal, journalId: jDef.id };
+    await histStore.set(history); schedulePush();
+    modal.classList.remove('show'); rerenderActive();
+  };
+  const cancelBtn = document.getElementById('jCancel'); if(cancelBtn) cancelBtn.onclick = () => modal.classList.remove('show');
+  const delBtn = document.getElementById('jDelete');
+  if(delBtn) delBtn.onclick = async () => {
+    if(!confirm('Ștergi intrarea de azi pentru acest exercițiu?')) return;
+    if(history[day]){ delete history[day][idx]; if(!Object.keys(history[day]).length) delete history[day]; }
+    await histStore.set(history); schedulePush();
+    modal.classList.remove('show'); rerenderActive();
+  };
+}
+
+function openArtifactForm(x, idx, aDef){
+  const modal = document.getElementById('journalModal');
+  const body = document.getElementById('journalModalBody');
+  document.getElementById('journalModalTitle').textContent = aDef.label;
+  const art = artifacts[aDef.id] || {current:'', history:[]};
+  let html = '';
+  html += `<label class="jLabel">${escapeHtml(aDef.freetextLabel)}<textarea id="jArtifact">${escapeHtml(art.current||'')}</textarea></label>`;
+  if(art.history.length) html += `<button type="button" class="backupLink" id="jArtHistToggle">Istoric versiuni (${art.history.length})</button><div class="wheelHistList" id="jArtHistList">${art.history.slice().reverse().map(h=>`<div>${fmtDateRo(h.date)}: ${escapeHtml(h.text)}</div>`).join('')}</div>`;
+  html += `<div class="cloudActions"><button type="button" class="primary" id="jSaveArt">Salvează</button><button type="button" id="jCancelArt">Anulează</button></div>`;
+  body.innerHTML = html;
+  modal.classList.add('show');
+  if(art.history.length) document.getElementById('jArtHistToggle').onclick = ()=>document.getElementById('jArtHistList').classList.toggle('show');
+  document.getElementById('jCancelArt').onclick = () => modal.classList.remove('show');
+  document.getElementById('jSaveArt').onclick = async () => {
+    const text = document.getElementById('jArtifact').value.trim();
+    if(!text) return;
+    artifacts[aDef.id] = artifacts[aDef.id] || {current:'', history:[]};
+    artifacts[aDef.id].current = text;
+    artifacts[aDef.id].history.push({date: todayISO(), text});
+    await artifactsStore.set(artifacts); schedulePush();
+    const day = todayISO();
+    history[day] = history[day] || {};
+    history[day][idx] = true;
+    await histStore.set(history);
+    modal.classList.remove('show'); rerenderActive();
+  };
+}
+document.getElementById('journalModalClose').onclick = () => document.getElementById('journalModal').classList.remove('show');
+document.getElementById('journalModal').addEventListener('click', e=>{ if(e.target.id==='journalModal') e.currentTarget.classList.remove('show'); });
+
+function renderJurnal(){
+  const V = document.getElementById('viewJurnal'); V.innerHTML='';
+  document.getElementById('foot').style.display='none';
+
+  const artWrap = document.createElement('div'); artWrap.className='jArtCards';
+  PERSISTENT_ARTIFACTS.forEach(aDef=>{
+    const art = artifacts[aDef.id];
+    const card = document.createElement('div'); card.className='jArtCard';
+    card.innerHTML = `<div class="jArtName">${escapeHtml(aDef.label)}</div><div class="jArtVal" style="${art&&art.current?'':'color:var(--muted)'}">${art&&art.current?escapeHtml(art.current):'Nedefinită încă — apare aici după S6 / S7.'}</div>`;
+    artWrap.appendChild(card);
+  });
+  V.appendChild(artWrap);
+
+  const searchDiv = document.createElement('input');
+  searchDiv.type='text'; searchDiv.className='searchInput'; searchDiv.id='jFilterInput';
+  searchDiv.placeholder='Caută în jurnalul tău...'; searchDiv.style.margin='16px 0 4px';
+  V.appendChild(searchDiv);
+
+  const list = document.createElement('div'); list.id='jEntriesList';
+  V.appendChild(list);
+
+  function renderEntries(filter){
+    const nf = (filter||'').toLowerCase();
+    const dates = Object.keys(history).sort().reverse();
+    let html = ''; let count = 0;
+    dates.forEach(d=>{
+      Object.keys(history[d]).forEach(k=>{
+        const v = history[d][k];
+        if(!v || typeof v!=='object' || !v.journal) return;
+        const x = CUSTOM[+k]; if(!x) return;
+        const jDef = JOURNAL_DEFS.find(jd=>jd.id===v.journalId);
+        const text = journalToPlainText(jDef, v.journal);
+        if(nf && !(x[0]+' '+text).toLowerCase().includes(nf)) return;
+        count++;
+        html += `<div class="jEntryCard"><div class="jEntryDate">${fmtDateRo(d)} · ${escapeHtml(x[0])}</div>${renderJournalReadonly(jDef, v.journal)}</div>`;
+      });
+    });
+    list.innerHTML = count? html : '<p class="cloudNote">Nicio intrare încă. Bifează „azi" pe un exercițiu cu jurnal (ex. Cele 5/7 întrebări de seară, Echilibrarea percepțiilor) ca să apară aici.</p>';
+  }
+  renderEntries('');
+  document.getElementById('jFilterInput').addEventListener('input', e=>renderEntries(e.target.value));
 }
 
 /* ===== Roata Vieții ===== */
@@ -1094,9 +1346,11 @@ function applyRemoteDoc(d){
     if(d.sel!==undefined) sel=JSON.parse(d.sel);
     if(d.history!==undefined) history=JSON.parse(d.history);
     if(d.wheel!==undefined) wheel=JSON.parse(d.wheel);
+    if(d.artifacts!==undefined) artifacts=JSON.parse(d.artifacts);
     try{ localStorage.setItem('papapp_sel', JSON.stringify(sel)); }catch(e){}
     try{ localStorage.setItem('papapp_history', JSON.stringify(history)); }catch(e){}
     try{ localStorage.setItem('papapp_wheel', JSON.stringify(wheel)); }catch(e){}
+    try{ localStorage.setItem('papapp_artifacts', JSON.stringify(artifacts)); }catch(e){}
     rerenderActive();
     applyingRemote=false; lastSyncAt=Date.now();
     return true;
@@ -1108,7 +1362,7 @@ async function pushNow(){
   syncState='pushing'; updateCloudBtn();
   try{
     await F.setDoc(papillonDocRef(), {
-      sel: JSON.stringify(sel), history: JSON.stringify(history), wheel: JSON.stringify(wheel),
+      sel: JSON.stringify(sel), history: JSON.stringify(history), wheel: JSON.stringify(wheel), artifacts: JSON.stringify(artifacts),
       updatedAt: Date.now(), writer: SYNC_WRITER
     });
     lastSyncAt=Date.now(); syncState='on'; syncErr='';
@@ -1217,6 +1471,7 @@ document.getElementById('cloudModal').addEventListener('click', e=>{ if(e.target
   try{ sel=await store.get()||{} }catch(e){ sel={} }
   try{ history=await histStore.get()||{} }catch(e){ history={} }
   try{ wheel=await wheelStore.get()||defaultWheel(); if(!wheel.categories) wheel=defaultWheel(); }catch(e){ wheel=defaultWheel(); }
+  try{ artifacts=await artifactsStore.get()||{}; }catch(e){ artifacts={}; }
   renderWeek(); renderInv();
   saveDailyBackupIfNeeded();
 })();
@@ -1238,5 +1493,7 @@ document.getElementById('cloudModal').addEventListener('click', e=>{ if(e.target
     }
   })();
 </script>
+<script src="assets/search.js"></script>
+<script>papillonInitSearch('complet');</script>
 </body>
 </html>

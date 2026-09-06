@@ -9,12 +9,23 @@
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+<div class="modalOverlay" id="searchModal">
+  <div class="modalBox">
+    <button class="modalClose" id="searchModalClose" aria-label="Închide">×</button>
+    <h3>🔎 Caută un exercițiu</h3>
+    <input type="text" class="searchInput" id="searchInput" placeholder="Ex: Formula Magică, Roata Vieții...">
+    <div class="searchResults" id="searchResults"></div>
+  </div>
+</div>
 <nav class="sitenav">
   <div class="in">
     <a class="brand" href="index.html">🦋 Papillon</a>
     <a class="navlink " href="index.html">Planificator</a>
     <a class="navlink " href="ghid-complet.html">Ghid Complet</a>
     <a class="navlink on" href="ghid-rapid.html">Ghid Rapid</a>
+    <button class="searchBtn" id="searchBtn" aria-label="Caută un exercițiu" title="Caută">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
     <button class="themeBtn" id="themeBtn" aria-label="Comută modul întunecat" title="Mod întunecat">
       <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
       <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
@@ -623,5 +634,7 @@
   };
 })();
 </script>
+<script src="assets/search.js"></script>
+<script>papillonInitSearch('rapid');</script>
 </body>
 </html>
