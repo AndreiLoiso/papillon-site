@@ -39,7 +39,8 @@
 html,body{margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.5;padding-bottom:110px;transition:background .2s,color .2s}
 .wrap{max-width:860px;margin:0 auto;padding:20px 16px}
-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.planHeaderBtn{flex:0 0 auto;background:var(--e3);border-color:var(--amber);font-weight:600;white-space:nowrap}
 header h1{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:28px;margin:0;color:var(--green);letter-spacing:.2px}
 header .sub{color:var(--muted);font-size:13px;margin-top:2px}
 .saved{font-size:12px;color:var(--ok);opacity:0;transition:opacity .4s}
@@ -279,6 +280,7 @@ a{color:var(--green)}
       <h1>Papillon · Planificatorul exercițiilor</h1>
       <div class="sub">Alege exercițiile fiecărei săptămâni — timpul zilnic se calculează automat. <span id="saved" class="saved">✓ salvat</span></div>
     </div>
+    <button class="btn planHeaderBtn" id="btnPlanDay">📅 Planifică o zi</button>
   </header>
 
   <div class="tabs" role="tablist">
@@ -677,10 +679,6 @@ function renderRail(){
   c.setAttribute('role','tab'); c.setAttribute('aria-selected', isCustom());
   c.onclick=()=>{ wk='custom'; renderWeek(); };
   r.appendChild(c);
-  const p=document.createElement('button'); p.className='wk planbtn';
-  p.textContent='+ Planifică o zi';
-  p.onclick=()=>openPlanModal();
-  r.appendChild(p);
 }
 
 function renderWeek(){
@@ -744,6 +742,7 @@ document.getElementById('btnClear').onclick=async()=>{
   delete sel[wk]; await store.set(sel); schedulePush(); renderWeek();
   showToast(label, async()=>{ if(prev) sel[wk]=prev; else delete sel[wk]; await store.set(sel); schedulePush(); renderWeek(); });
 };
+document.getElementById('btnPlanDay').onclick=()=>{ if(view!=='chk') setView('chk'); openPlanModal(); };
 
 /* ===== inventarul pe categorii — acum selectabil ===== */
 const CAT_ORDER=['Energetic','Fizic','Suflet/Natură','Mental/Jurnal','Terapeutic','Viziune','Părți Interioare','Relațional/Ancestral','Studiu'];
