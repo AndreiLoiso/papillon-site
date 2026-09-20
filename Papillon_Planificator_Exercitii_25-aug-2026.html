@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Papillon · Planificatorul exercițiilor (versiune 25 aug 2026)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#26332A; --green:#3D5A4C; --sage:#7A9E7E; --amber:#B08A5B;
+  --paper:#F3F5F0; --card:#FFFFFF; --line:#E2E7DF; --muted:#75816F;
+  --e1:#D9E8D5; --e2:#D5E3F0; --e3:#F0E6D2; --e4:#E4D9EE;
+  --ok:#4E7A5A; --okbg:#EAF3EC;
+  --chip-t-bg:#FBF6EE; --chip-t-bd:#E5D8C5;
+  --pc-bg:#F2E3D8; --pc-fg:#96552E;
+  --ps-bg:#DEE6F4; --ps-fg:#3F5A8C;
+  --pm-bg:#F6EFD6; --pm-fg:#6E551A;
+  --chip-t-fg:#865C2E;
+  --pop-shadow:0 14px 34px rgba(38,51,42,.22);
+  --shadow:0 -6px 24px rgba(38,51,42,.18);
+}
+:root[data-theme="dark"]{
+  --ink:#E7ECE4; --green:#8FBB9C; --sage:#6E9678; --amber:#D6A876;
+  --paper:#161C18; --card:#1F2822; --line:#333F36; --muted:#8A9689;
+  --e1:#243529; --e2:#20303C; --e3:#3A311F; --e4:#2E2638;
+  --ok:#6FAE81; --okbg:#1E3226;
+  --chip-t-bg:#2E2717; --chip-t-bd:#4A3E27;
+  --pc-bg:#3B2A1E; --pc-fg:#E3A97C;
+  --ps-bg:#212C42; --ps-fg:#9DB4E8;
+  --pm-bg:#3A331B; --pm-fg:#E4C978;
+  --chip-t-fg:#D6A876;
+  --pop-shadow:0 14px 34px rgba(0,0,0,.45);
+  --shadow:0 -6px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.5;padding-bottom:110px;transition:background .2s,color .2s}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+header h1{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:28px;margin:0;color:var(--green);letter-spacing:.2px}
+header .sub{color:var(--muted);font-size:13px;margin-top:2px}
+.saved{font-size:12px;color:var(--ok);opacity:0;transition:opacity .4s}
+.saved.show{opacity:1}
+.themeBtn{flex:0 0 auto;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--green);cursor:pointer;display:grid;place-items:center;margin-top:2px}
+.themeBtn:hover{background:var(--okbg)}
+.themeBtn svg{width:18px;height:18px}
+.themeBtn .moon{display:none}
+:root[data-theme="dark"] .themeBtn .sun{display:none}
+:root[data-theme="dark"] .themeBtn .moon{display:block}
+.tabs{display:flex;gap:4px;margin:18px 0 14px;border-bottom:1px solid var(--line)}
+.tab{border:none;background:none;font:inherit;font-weight:500;padding:9px 14px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.on{color:var(--green);border-color:var(--green)}
+.weeks{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.wk{flex:0 0 auto;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink)}
+.wk.on{outline:2px solid var(--green);outline-offset:-1px;font-weight:600}
+.wkhead{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:6px 0 16px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.wkhead .theme{font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:600;color:var(--green)}
+.badge{display:inline-block;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:99px;color:var(--ink)}
+.actions{display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 12px;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--green)}
+.btn:hover{background:var(--okbg)}
+.grp{margin:18px 0 6px;display:flex;align-items:baseline;gap:8px}
+.grp h2{font-size:13px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--green);margin:0}
+.grp .hint{font-size:12px;color:var(--muted)}
+.row{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px 11px 14px;margin:7px 0;cursor:pointer;transition:border-color .15s, background .15s;width:100%;text-align:left;font:inherit;color:inherit}
+.row:hover{border-color:var(--sage)}
+.row.on{background:var(--okbg);border-color:var(--sage)}
+.box{width:21px;height:21px;border-radius:7px;border:1.8px solid #B9C4B4;flex:0 0 auto;margin-top:1px;display:grid;place-items:center;color:#fff;font-size:13px;transition:all .15s}
+.row.on .box{background:var(--ok);border-color:var(--ok)}
+.lbl{flex:1}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.chip{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--paper);color:var(--muted);border:1px solid var(--line)}
+.chip.t{color:var(--chip-t-fg);border-color:var(--chip-t-bd);background:var(--chip-t-bg);font-weight:600}
+.chip.pillar{font-weight:600;border-color:transparent}
+.chip.p-corp{background:var(--pc-bg);color:var(--pc-fg)}
+.chip.p-suflet{background:var(--ps-bg);color:var(--ps-fg)}
+.chip.p-minte{background:var(--pm-bg);color:var(--pm-fg)}
+.infoBtn{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0;margin-top:1px}
+.infoBtn:hover,.infoBtn[aria-expanded="true"]{color:var(--green);border-color:var(--sage);background:var(--okbg)}
+.infoBtn svg{width:15px;height:15px}
+.row,.card,.wkhead,.inv,.wk{transition:background .2s,border-color .2s}
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--green);color:#fff;box-shadow:var(--shadow);transition:background .2s}
+.foot .in{max-width:860px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.tot .n{font-family:'Fraunces',Georgia,serif;font-size:27px;font-weight:600;line-height:1}
+.tot .l{font-size:11px;opacity:.8;letter-spacing:.5px;text-transform:uppercase}
+.foot .sep{width:1px;height:34px;background:rgba(255,255,255,.25)}
+.foot .note{font-size:12px;opacity:.75;margin-left:auto}
+.cat{margin:22px 0 8px;font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:600;color:var(--green);border-bottom:1px solid var(--line);padding-bottom:6px}
+.inv{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:7px 0;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.inv .l{flex:1;min-width:220px}
+.inv .r{display:flex;align-items:center;gap:10px}
+.inv .wks{font-size:11.5px;color:var(--muted);white-space:nowrap}
+a{color:var(--green)}
+@media (max-width:560px){ .wkhead .theme{font-size:17px} .tot .n{font-size:22px} }
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+/* ===== popover de informații ===== */
+.popover{position:fixed;z-index:60;display:none;width:300px;max-width:calc(100vw - 24px);background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--pop-shadow);padding:12px 30px 12px 14px;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}
+.popover.show{display:block;opacity:1;transform:translateY(0)}
+.pop-body{font-size:13px;line-height:1.6;color:var(--ink)}
+.pop-close{position:absolute;top:5px;right:6px;border:none;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:4px 7px;border-radius:7px}
+.pop-close:hover{color:var(--ink);background:var(--paper)}
+.pop-arrow{position:absolute;left:16px;top:-6px;width:12px;height:12px;background:var(--card);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+.popover.arrow-bottom .pop-arrow{top:auto;bottom:-6px;border-left:none;border-top:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Papillon · Planificatorul exercițiilor</h1>
+      <div class="sub">Alege exercițiile fiecărei săptămâni — timpul zilnic se calculează automat. <span id="saved" class="saved">✓ salvat</span></div>
+    </div>
+    <button class="themeBtn" id="themeBtn" aria-label="Comută modul întunecat" title="Mod întunecat">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
+    </button>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" id="tabChk" role="tab" aria-selected="true">Checklist săptămânal</button>
+    <button class="tab" id="tabInv" role="tab" aria-selected="false">Toate exercițiile</button>
+  </div>
+
+  <div id="viewChk">
+    <div class="weeks" id="weekRail" role="tablist" aria-label="Săptămâni"></div>
+    <div class="wkhead">
+      <div>
+        <div class="theme" id="wkTheme"></div>
+        <span class="badge" id="wkBadge"></span>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnAllDaily">Selectează protocolul zilnic</button>
+        <button class="btn" id="btnClear">Golește săptămâna</button>
+      </div>
+    </div>
+    <div id="lists"></div>
+  </div>
+
+  <div id="viewInv" style="display:none"></div>
+</div>
+
+<div class="foot" id="foot">
+  <div class="in">
+    <div class="tot"><div class="n"><span id="tDaily">0</span> min</div><div class="l">pe zi · exerciții zilnice</div></div>
+    <div class="sep"></div>
+    <div class="tot"><div class="n"><span id="tPunct">0</span> min</div><div class="l">punctuale / flexibile (total)</div></div>
+    <div class="note" id="footNote"></div>
+  </div>
+</div>
+
+<script>
+/* ===== date: 12 săptămâni · [denumire, categorie, moment, frecvență, minute, pilon(Corp/Suflet/Minte), info] ===== */
+const ET = {1:['Etapa 1 · Omida','var(--e1)'],2:['Etapa 2 · Resursa','var(--e2)'],3:['Etapa 3 · Coconul','var(--e3)'],4:['Etapa 4 · Aripile','var(--e4)']};
+const W = {
+1:{t:'Punerea în Mișcare',e:1,x:[
+ ['Împământare / conectare ancestrală','Energetic','Dimineața','zilnic',3,'Corp','Reconectare la energia Pământului și la linia ta ancestrală — primul pas al zilei, cel care ancorează corpul înainte de orice altceva.'],
+ ['Curățare energetică','Energetic','Dimineața','zilnic',3,'Corp','Eliberarea energiilor care nu îți aparțin, acumulate din exterior sau din ziua anterioară.'],
+ ['Postura Superman + 3 respirații profunde','Fizic','Dimineața','zilnic',2,'Corp','Postură deschisă în fața unei ferestre: picioarele la nivelul umerilor, mâinile în șolduri, capul drept, chakra inimii deschisă. Minimum 3 respirații profunde — apoi comportă-te ca Superman toată ziua.'],
+ ['Plimbare conștientă în natură','Suflet/Natură','Ziua','zilnic',5,'Suflet','Minimum 3–5 minute afară, cu atenția îndreptată spre natură. Contează și în mers rapid sau cu câinele — important e să fii conștient de ce te înconjoară.'],
+ ['Observarea unui detaliu + descriere 3–5 cuvinte (foto/desen)','Suflet/Natură','Ziua','zilnic',3,'Suflet','Alege un detaliu din natură care te atrage, fotografiază-l sau desenează-l și descrie în 3–5 cuvinte ce te-a inspirat.'],
+ ['Cele 5 întrebări de seară (jurnal)','Mental/Jurnal','Seara','zilnic',10,'Minte','Ce am realizat astăzi? Am obținut cel mai important rezultat al meu? Ce am învățat? Ce pot îmbunătăți? Trei lucruri/oameni pentru care sunt recunoscător — le mulțumesc.'],
+ ['Roata Vieții — evaluare inițială','Viziune','Punctual','punctual',60,'Minte','Evaluarea satisfacției pe domeniile principale ale vieții, de la 0 la 10 — punctul de referință față de care se măsoară tot progresul programului.'],
+ ['Stabilirea obiectivelor programului','Viziune','Punctual','punctual',30,'Minte','Formulează, în scris, ce vrei să obții din acest parcurs de 12 săptămâni.']]},
+2:{t:'Fă Puțin Spațiu',e:1,x:[
+ ['Împământare + curățare energetică','Energetic','Dimineața','zilnic',5,'Corp','Împământare, conectare și curățare a sistemului energetic — continuarea ritualului de dimineață din S1.'],
+ ['Conexiunea Cer-OM-Pământ (simplă)','Energetic','Dimineața','zilnic',5,'Corp','Exercițiul din ședința 2: rădăcini în Pământ, deschidere spre Cer, tu la mijloc — puntea vie dintre cele două.'],
+ ['Pauză conștientă: oprire, Superman, ancorare, mesajul detaliului','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprește-te într-un loc din natură, adoptă postura Superman, închide ochii și simte-te ancorat; deschide ochii, găsește un detaliu și conștientizează mesajul lui pentru tine.'],
+ ['Notarea mesajului în jurnal','Mental/Jurnal','Ziua','zilnic',2,'Minte','Dacă detaliul din pauza de zi ți-a transmis un mesaj important, notează-l în jurnal cât e încă proaspăt.'],
+ ['Cele 5 întrebări de seară (jurnal)','Mental/Jurnal','Seara','zilnic',10,'Minte','Recapitulația de bază a serii — vezi explicația din Săptămâna 1.'],
+ ['Mișcarea mediului: fă spațiu / ordine','Fizic','Seara','zilnic (S2)',15,'Corp','Eliberezi, ordonezi, faci loc fizic pentru transformare — spațiul exterior reflectă spațiul interior.'],
+ ['Echilibrarea percepțiilor (min. 1 eveniment/zi)','Terapeutic','Seara','zilnic',15,'Minte','Alege un eveniment perceput ca negativ și caută-i beneficiile — chiar și unul singur pe zi antrenează mintea să vadă imaginea completă.'],
+ ['Timeline — completare Excel (se poate fragmenta)','Terapeutic','Punctual','punctual',150,'Minte','Notează evenimentele importante ale vieții tale, an cu an, în fișierul Timeline — se poate face fragmentat, pe mai multe zile.'],
+ ['Meditația Timeline — rememorare an cu an','Terapeutic','Punctual','punctual',30,'Suflet','Călătorie meditativă de rememorare, an cu an, până la naștere — folosită ca ajutor pentru completarea Timeline-ului.']]},
+3:{t:'Sens · Părți Interioare · Împământare',e:2,x:[
+ ['Împământare + curățare energetică','Energetic','Dimineața','zilnic',5,'Corp','Împământare, conectare și curățare a sistemului energetic.'],
+ ['Conexiunea Cer-OM-Pământ','Energetic','Dimineața','zilnic',5,'Corp','Rădăcini în Pământ, deschidere spre Cer — conexiunea verticală practicată zilnic.'],
+ ['Pauză conștientă: desculț dacă e posibil, postura Supraomului, mesajul detaliului','Suflet/Natură','Ziua','zilnic',5,'Suflet','Dacă timpul permite, scoate-ți pantofii pentru ancorare directă în Pământ, apoi adoptă postura Supraomului și găsește mesajul detaliului din jur.'],
+ ['Cele 5 întrebări de seară (jurnal)','Mental/Jurnal','Seara','zilnic',10,'Minte','Recapitulația de bază a serii.'],
+ ['Echilibrarea percepțiilor (continuare)','Terapeutic','Seara','zilnic',15,'Minte','Continuă practica zilnică începută în S2 — minimum un eveniment reechilibrat pe zi.'],
+ ['Timeline — continuarea completării','Terapeutic','Punctual','punctual',60,'Minte','Continuă să completezi evenimentele din Timeline, acolo unde ai rămas.'],
+ ['Vision Board — colajul viitorului tău','Viziune','Punctual','punctual',90,'Minte','Colaj cu imagini ale viitorului tău — se așază undeva vizibil, ca reamintire zilnică a direcției spre care mergi.']]},
+4:{t:'Echilibrarea Percepțiilor · Chakrele',e:2,x:[
+ ['Împământare + curățare energetică','Energetic','Dimineața','zilnic',5,'Corp','Împământare, conectare și curățare a sistemului energetic.'],
+ ['Conexiunea Cer-OM-Pământ','Energetic','Dimineața','zilnic',5,'Corp','Rădăcini în Pământ, deschidere spre Cer.'],
+ ['Pauză conștientă în natură (desculț, mesajul detaliului)','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprire în natură, ancorare și găsirea mesajului detaliului care îți atrage atenția.'],
+ ['Cele 7 întrebări de seară (include 10 beneficii + 3 lucruri care îmi plac la mine)','Mental/Jurnal','Seara','zilnic',15,'Minte','Cele 5 întrebări de bază + „Ce m-a enervat/deranjat azi? (10 beneficii)” + „Care sunt 3 aspecte care îmi plac la mine?” — saltul de la 5 la 7 întrebări.'],
+ ['Echilibrarea percepțiilor completă (30–50 beneficii)','Terapeutic','Punctual','punctual',60,'Minte','Metoda completă: identifici ce te irită la ceilalți, recunoști când ai făcut la fel, alegi evenimentul cu cea mai mare încărcătură și cauți 30–50 de beneficii, până se neutralizează.'],
+ ['Studiu: fișa chakrelor','Studiu','Punctual','punctual',30,'Minte','Parcurge fișa celor 7 centri energetici — poziție, culoare, element, funcții — baza teoretică a exercițiilor energetice zilnice.']]},
+5:{t:'Sistemul Energetic în Profunzime',e:2,x:[
+ ['Împământare + curățare energetică','Energetic','Dimineața','zilnic',5,'Corp','Împământare, conectare și curățare a sistemului energetic.'],
+ ['Conexiunea Cer-OM-Pământ','Energetic','Dimineața','zilnic',5,'Corp','Rădăcini în Pământ, deschidere spre Cer.'],
+ ['Cele 9 respirații pentru purificare (pranayama 4–16–8)','Energetic','Dimineața','zilnic',5,'Corp','Respirație ritmată: 4 secunde inspir, 16 reținere, 8 expir, cu alternarea nărilor, în trei serii de trei — purifică nadi-urile (canalele energetice).'],
+ ['Pauză conștientă în natură','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprire conștientă în natură, cu ancorare și atenție la ce te înconjoară.'],
+ ['Cele 7 întrebări de seară','Mental/Jurnal','Seara','zilnic',15,'Minte','Recapitulația extinsă a serii, cu cele 7 întrebări introduse în S4.'],
+ ['Curățarea chakrelor (ghidată, min. 3–5×/săptămână)','Energetic','Flexibil','3–5×/săpt.',10,'Corp','Practică ghidată de curățare a celor 7 centri energetici — recomandată de minimum 3–5 ori pe săptămână.'],
+ ['Studiu: nadi-uri, corpuri subtile, torus','Studiu','Punctual','punctual',40,'Minte','Canalele energetice (nadi), cele 7 corpuri subtile și vârtejul toroidal al energiei din jurul corpului — anatomia care fundamentează exercițiile energetice.']]},
+6:{t:'Anti-Sabotaj · Formula Magică',e:3,x:[
+ ['Împământare + Cer-OM-Pământ (versiunea completă)','Energetic','Dimineața','zilnic',8,'Corp','Versiunea completă a exercițiului: integrează acum și curățarea sistemului energetic, și întărirea torusului.'],
+ ['Formula Magică — după trezire','Mental/Jurnal','Dimineața','zilnic',1,'Minte','Declamă-ți Formula Magică imediat după trezire — momentul în care mintea conștientă și subconștientul sunt aliniate.'],
+ ['Minutul de Aur cu Formula Magică (ora personală)','Mental/Jurnal','Ziua','zilnic',1,'Minte','Minutul zilnic (calculat din ziua și luna nașterii) în care canalul spre Univers e deschis — declamă Formula Magică exact atunci.'],
+ ['Pauză conștientă în natură','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprire conștientă în natură.'],
+ ['Cele 7 întrebări de seară','Mental/Jurnal','Seara','zilnic',15,'Minte','Recapitulația extinsă a serii.'],
+ ['Recunoștință față de părinți („Mulțumesc că mi-ați dat Viață”)','Relațional/Ancestral','Seara','zilnic',2,'Suflet','Recunoștința față de părinți, seara, ca practică de conectare și eliberare.'],
+ ['Formula Magică — înainte de somn','Mental/Jurnal','Seara','zilnic',1,'Minte','Declamă Formula Magică înainte de somn — al doilea moment de aliniere conștient–subconștient din zi.'],
+ ['Compunerea Formulei Magice personale (din conștientizări)','Viziune','Punctual','punctual',45,'Minte','Sinteza personală a conștientizărilor tale de până acum — „Programele noi de Iubire”, formulate afirmativ, la timpul prezent.'],
+ ['Temă specială: echilibraj pe momentele dificile din Timeline','Terapeutic','Punctual','punctual',90,'Minte','Aplică metoda de echilibrare a percepțiilor retroactiv, pe momentele cele mai dificile identificate în Timeline.']]},
+7:{t:'SPI · Moștenirea Familială · 5 Rituri',e:3,x:[
+ ['Încălzire + Cele 5 Rituri Tibetane (3 repetări, crește din 2 în 2)','Fizic','Dimineața','zilnic',10,'Corp','Cinci mișcări care echilibrează cele 5 elemente și stimulează sistemul endocrin — începi cu 3 repetări ale fiecărui rit, crești din 2 în 2, spre maximum 21.'],
+ ['Cer-OM-Pământ + purificarea chakrelor + torus','Energetic','Dimineața','zilnic',10,'Corp','Prima secvențiere oficială completă a ritualului de dimineață: conexiunea Cer-OM-Pământ, cu purificarea chakrelor și întărirea torusului.'],
+ ['Formula Magică','Mental/Jurnal','Dimineața','zilnic',1,'Minte','Declamarea Formulei Magice, acum integrată ca pas fix al ritualului de dimineață.'],
+ ['Pauză conștientă: poziția COP, conexiunea cu Infinitul','Suflet/Natură','Ziua','zilnic',5,'Suflet','Postura Cer-OM-Pământ practicată în pauza de zi, cu conștientizarea conexiunii cu Infinitul.'],
+ ['Minutul de Aur','Mental/Jurnal','Ziua','zilnic',1,'Minte','Minutul zilnic de deschidere spre Univers — vezi explicația din S6.'],
+ ['Recapitulația de seară (5 întrebări revizuite)','Mental/Jurnal','Seara','zilnic',12,'Minte','Versiunea revizuită a recapitulației serii, aliniată cu instrumentele acumulate până acum.'],
+ ['Recunoștință părinți + reconectare cu strămoșii','Relațional/Ancestral','Seara','zilnic',3,'Suflet','Extinzi recunoștința față de părinți la întreaga linie a strămoșilor.'],
+ ['Definirea SPI — Sistemul Priorităților Intrinseci','Viziune','Punctual','punctual',60,'Minte','Sistemul Priorităților Intrinseci: prioritățile care te motivează dinăuntru („îmi place”, „vreau”), spre deosebire de cele care „trebuie” făcute.'],
+ ['Conectarea cu strămoșii (vizualizare: forța lor în spatele tău)','Relațional/Ancestral','Flexibil','la nevoie',5,'Suflet','Vizualizează forța celor 4096 de strămoși din ultimele 12 generații, susținându-te din spate — folosește-o oricând simți lipsă de sprijin.']]},
+8:{t:'Muntele · Echilibrarea cu SPI · Corpul Fizic',e:3,x:[
+ ['Încălzire + 5 Rituri Tibetane','Fizic','Dimineața','zilnic',10,'Corp','Practica fizică zilnică — vezi explicația din S7.'],
+ ['Cer-OM-Pământ + chakre + torus','Energetic','Dimineața','zilnic',10,'Corp','Ritualul energetic complet de dimineață.'],
+ ['Formula Magică','Mental/Jurnal','Dimineața','zilnic',1,'Minte','Declamarea Formulei Magice, la trezire.'],
+ ['Pauză conștientă: poziția COP','Suflet/Natură','Ziua','zilnic',5,'Suflet','Postura Cer-OM-Pământ practicată în pauza de zi.'],
+ ['Minutul de Aur','Mental/Jurnal','Ziua','zilnic',1,'Minte','Minutul zilnic de deschidere spre Univers.'],
+ ['Recapitulația de seară + recunoștință strămoși','Mental/Jurnal','Seara','zilnic',15,'Minte','Recapitulația serii, cu recunoștința față de părinți și strămoși integrată ca pas fix.'],
+ ['Echilibrare a percepțiilor în funcție de SPI (zilnic)','Terapeutic','Seara','zilnic',15,'Minte','Echilibrezi percepțiile prin prisma priorităților tale intrinseci — cauți 50–100 de avantaje ale situației, legate explicit de misiunea ta.'],
+ ['Aplică min. 1 recomandare de îngrijire a corpului','Fizic','Punctual','punctual',15,'Corp','Aplică cel puțin o recomandare din cele trei categorii: ce pui în corp, ce pui în jurul lui, cum îl folosești (somn, mișcare).'],
+ ['Jurnal: în ce domeniu sunt în „revoluție”?','Mental/Jurnal','Punctual','punctual',20,'Minte','Reflectează în ce domeniu al vieții te „învârți în cerc” (revoluție), fără să integrezi experiența palierului curent.']]},
+9:{t:'Harta Interioară · Recunoștința · Eliberarea',e:4,x:[
+ ['Ritualul de dimineață complet (Rituri + Cer-OM-Pământ + Formula)','Energetic','Dimineața','zilnic',15,'Corp','Secvența stabilizată: încălzire, 5 Rituri, Cer-OM-Pământ cu chakre și torus, Formula Magică — aproximativ 15 minute.'],
+ ['Pauză conștientă în natură','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprire conștientă în natură.'],
+ ['Minutul de Aur','Mental/Jurnal','Ziua','zilnic',1,'Minte','Minutul zilnic de deschidere spre Univers.'],
+ ['Recapitulația de seară + recunoștință strămoși','Mental/Jurnal','Seara','zilnic',15,'Minte','Recapitulația serii, cu recunoștința față de părinți și strămoși.'],
+ ['Harta Interioară — notarea/desenarea Părților (12 atribute)','Părți Interioare','Punctual','punctual',45,'Suflet','Cartografiază Părțile Interioare descoperite în ședințele de hipnoză: nume, vârstă, rol, talent, defect — un document viu, care evoluează cu vindecarea.'],
+ ['Meditația de Eliberare (repetabilă)','Terapeutic','Flexibil','repetat',30,'Suflet','Eliberare de poverile trecutului — alege un singur eveniment încărcat per sesiune; condiția: fără autocompătimire sau autopedepsire.'],
+ ['Practica „Mulțumesc” în loc de „iert”','Terapeutic','Flexibil','la nevoie',5,'Suflet','Înlocuiește iertarea (poziție de superioritate) cu recunoștința (poziție de umilință și oportunitate) — „nu e nimic de iertat”.']]},
+10:{t:'Echipa Interioară · FRI · Magia Apei',e:4,x:[
+ ['Ritualul de dimineață complet','Energetic','Dimineața','zilnic',15,'Corp','Ritualul stabilizat de dimineață.'],
+ ['Pauză conștientă în natură','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprire conștientă în natură.'],
+ ['Minutul de Aur','Mental/Jurnal','Ziua','zilnic',1,'Minte','Minutul zilnic de deschidere spre Univers.'],
+ ['Încărcarea apei cu iubire/intenție (la mese)','Energetic','Ziua','zilnic',1,'Corp','30 de secunde de intenție și iubire, la nivelul chakrei inimii, înainte de a bea apă — informația se imprimă în apă (Masaru Emoto).'],
+ ['Recapitulația de seară','Mental/Jurnal','Seara','zilnic',15,'Minte','Recapitulația serii.'],
+ ['FRI — Formula de Reprogramare Internă („Marele Șantier”)','Viziune','Punctual','punctual',240,'Minte','„Marele șantier”: minimum o jumătate de zi, în 7 capitole — de la Marele Vis la Formula Magică aliniată cu el. Regula de aur: răspunzi cu sufletul, nu cu mentalul, fără să citești întrebările în avans.'],
+ ['Proiectul de Viață — tabelul final (după FRI)','Viziune','Punctual','punctual',60,'Minte','Tabelul sintetic care rezultă din FRI — obiective de viață, 10 ani, 1 an, plan de 90 de zile.'],
+ ['Ședință internă cu Părțile (tur de masă)','Părți Interioare','Flexibil','săptămânal',15,'Suflet','Tur de masă cu Părțile tale Interioare — fiecare își spune perspectiva; folosești talentul unei Părți exact când ai nevoie de el.']]},
+11:{t:'Copilul Interior · Destinul · Aripile',e:4,x:[
+ ['Ritualul de dimineață complet','Energetic','Dimineața','zilnic',15,'Corp','Ritualul stabilizat de dimineață.'],
+ ['Exercițiul „Simte-ți Aripile” (după Cer-OM-Pământ)','Energetic','Dimineața','zilnic',3,'Corp','Extensie a Cer-OM-Pământ: când inima se activează, torusul energetic devine dublu — imaginea celor două torusuri sunt exact aripile de fluture.'],
+ ['Pauză conștientă în natură','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprire conștientă în natură.'],
+ ['Minutul de Aur','Mental/Jurnal','Ziua','zilnic',1,'Minte','Minutul zilnic de deschidere spre Univers.'],
+ ['Recapitulația de seară','Mental/Jurnal','Seara','zilnic',15,'Minte','Recapitulația serii.'],
+ ['Meditația de integrare a Copilului Interior','Părți Interioare','Punctual','punctual',30,'Suflet','Integrarea Copilului Interior — în armonie, el stă la mijlocul tuturor Părților, hrănit de fiecare dintre ele.'],
+ ['Aprofundarea Hărții Interioare (vârste, poziții, talente)','Părți Interioare','Punctual','punctual',30,'Suflet','Recitește harta cu atenție la vârstele și pozițiile Părților — fiecare vârstă diferită de a ta arată un moment care mai cere vindecare.']]},
+12:{t:'Tema de Viață · Numerologia · Jocul',e:4,x:[
+ ['Ritualul de dimineață complet + Aripile','Energetic','Dimineața','zilnic',18,'Corp','Ritualul complet de dimineață, cu exercițiul Aripilor energetice inclus — versiunea finală și stabilă a protocolului.'],
+ ['Pauză conștientă în natură','Suflet/Natură','Ziua','zilnic',5,'Suflet','Oprire conștientă în natură.'],
+ ['Minutul de Aur','Mental/Jurnal','Ziua','zilnic',1,'Minte','Minutul zilnic de deschidere spre Univers.'],
+ ['Recapitulația de seară','Mental/Jurnal','Seara','zilnic',15,'Minte','Recapitulația serii.'],
+ ['Studiul analizei numerologice personale','Studiu','Punctual','punctual',45,'Minte','Recitește-ți analiza numerologică personală prin prisma întregului drum parcurs.'],
+ ['Reflecție: rolul tău (ce ți-a plăcut între 7–14 ani)','Viziune','Punctual','punctual',30,'Minte','Ce ți-a plăcut să faci între 7 și 14 ani? Acolo se ascunde adesea rolul tău natural.'],
+ ['Actualizarea Formulei Magice cu noile conștientizări','Viziune','Punctual','punctual',20,'Minte','Ultima actualizare a Formulei, cu toate conștientizările acumulate în cele 12 săptămâni.']]}
+};
+const MOMENTS = ['Dimineața','Ziua','Seara','Flexibil','Punctual'];
+const INFO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><line x1="12" y1="16.5" x2="12" y2="11.5"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+
+/* ===== persistență: window.storage (Claude) → localStorage → memorie ===== */
+let mem = {};
+const store = {
+  async get(){ try{ if(window.storage){ const r=await window.storage.get('papapp_sel_25aug2026'); return r?JSON.parse(r.value):{} } }catch(e){}
+               try{ const v=localStorage.getItem('papapp_sel_25aug2026'); if(v) return JSON.parse(v) }catch(e){}
+               return mem; },
+  async set(d){ mem=d; let ok=false;
+               try{ if(window.storage){ await window.storage.set('papapp_sel_25aug2026', JSON.stringify(d)); ok=true } }catch(e){}
+               try{ localStorage.setItem('papapp_sel_25aug2026', JSON.stringify(d)); ok=true }catch(e){}
+               flashSaved(); return ok; }
+};
+let sel = {};   /* { "3": {0:true, 2:true} } */
+let wk = 1, view='chk';
+
+function flashSaved(){ const s=document.getElementById('saved'); s.classList.add('show'); clearTimeout(s._t); s._t=setTimeout(()=>s.classList.remove('show'),1200); }
+const isDaily = f => f.startsWith('zilnic');
+const pillarClass = p => p==='Corp'?'p-corp':p==='Suflet'?'p-suflet':'p-minte';
+function metaHTML(x){
+  return `<span class="chip pillar ${pillarClass(x[5])}">${x[5]}</span><span class="chip t">${x[4]} min</span><span class="chip">${x[1]}</span><span class="chip">${x[3]}</span>`;
+}
+
+async function toggleSel(i){
+  sel[wk]=sel[wk]||{}; sel[wk][i]=!sel[wk][i]; if(!sel[wk][i]) delete sel[wk][i];
+  await store.set(sel); renderWeek();
+}
+
+function makeInfoBtn(text){
+  const b=document.createElement('button');
+  b.type='button'; b.className='infoBtn';
+  b.setAttribute('aria-label','Detalii exercițiu'); b.setAttribute('aria-expanded','false');
+  b.innerHTML=INFO_SVG;
+  b.addEventListener('click',(e)=>{ e.stopPropagation(); if(activeInfoBtn===b){ hideInfo(); } else { showInfo(b,text); } });
+  return b;
+}
+
+function totals(){
+  let d=0,p=0; const s=sel[wk]||{};
+  W[wk].x.forEach((x,i)=>{ if(s[i]) (isDaily(x[3])?d+=x[4]:p+=x[4]); });
+  document.getElementById('tDaily').textContent=d;
+  document.getElementById('tPunct').textContent=p;
+  document.getElementById('footNote').textContent=`Săptămâna ${wk} · ${W[wk].t}`;
+}
+
+function renderRail(){
+  const r=document.getElementById('weekRail'); r.innerHTML='';
+  for(let i=1;i<=12;i++){
+    const b=document.createElement('button'); b.className='wk'+(i===wk?' on':'');
+    b.style.background = ET[W[i].e][1]; b.textContent='S'+i;
+    b.setAttribute('role','tab'); b.setAttribute('aria-selected', i===wk);
+    b.onclick=()=>{ wk=i; renderWeek(); };
+    r.appendChild(b);
+  }
+}
+
+function renderWeek(){
+  renderRail();
+  document.getElementById('wkTheme').textContent = `Săptămâna ${wk} — ${W[wk].t}`;
+  const bg=document.getElementById('wkBadge'); bg.textContent=ET[W[wk].e][0]; bg.style.background=ET[W[wk].e][1];
+  const L=document.getElementById('lists'); L.innerHTML='';
+  const s=sel[wk]||{};
+  MOMENTS.forEach(m=>{
+    const items = W[wk].x.map((x,i)=>[x,i]).filter(([x])=>x[2]===m);
+    if(!items.length) return;
+    const g=document.createElement('div'); g.className='grp';
+    g.innerHTML=`<h2>${m}</h2><span class="hint">${m==='Punctual'?'o dată în această săptămână':m==='Flexibil'?'după frecvența indicată':''}</span>`;
+    L.appendChild(g);
+    items.forEach(([x,i])=>{
+      const on=!!s[i];
+      const row=document.createElement('div');
+      row.className='row'+(on?' on':''); row.tabIndex=0;
+      row.setAttribute('role','checkbox'); row.setAttribute('aria-checked', on);
+      row.innerHTML=`<span class="box">${on?'✓':''}</span>
+        <span class="lbl">${x[0]}
+          <span class="meta">${metaHTML(x)}</span>
+        </span>`;
+      row.appendChild(makeInfoBtn(x[6]));
+      row.addEventListener('click',(e)=>{ if(e.target.closest('.infoBtn')) return; toggleSel(i); });
+      row.addEventListener('keydown',(e)=>{
+        if(e.target.closest('.infoBtn')) return;
+        if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggleSel(i); }
+      });
+      L.appendChild(row);
+    });
+  });
+  totals();
+}
+
+document.getElementById('btnAllDaily').onclick=async()=>{
+  sel[wk]=sel[wk]||{};
+  W[wk].x.forEach((x,i)=>{ if(isDaily(x[3])) sel[wk][i]=true; });
+  await store.set(sel); renderWeek();
+};
+document.getElementById('btnClear').onclick=async()=>{ delete sel[wk]; await store.set(sel); renderWeek(); };
+
+/* ===== inventarul pe categorii ===== */
+function renderInv(){
+  const V=document.getElementById('viewInv'); V.innerHTML='';
+  const cats={};
+  for(let w=1;w<=12;w++) W[w].x.forEach(x=>{
+    const k=x[0]+'|'+x[1];
+    if(!cats[k]) cats[k]={x, wks:[w]}; else cats[k].wks.push(w);
+  });
+  const order=['Energetic','Fizic','Suflet/Natură','Mental/Jurnal','Terapeutic','Viziune','Părți Interioare','Relațional/Ancestral','Studiu'];
+  order.forEach(c=>{
+    const items=Object.values(cats).filter(v=>v.x[1]===c);
+    if(!items.length) return;
+    const h=document.createElement('div'); h.className='cat'; h.textContent=c; V.appendChild(h);
+    items.sort((a,b)=>a.wks[0]-b.wks[0]).forEach(v=>{
+      const d=document.createElement('div'); d.className='inv';
+      const left=document.createElement('div'); left.className='l';
+      left.innerHTML=`${v.x[0]}<div class="meta">${metaHTML(v.x)}</div>`;
+      const right=document.createElement('div'); right.className='r';
+      const wksSpan=document.createElement('span'); wksSpan.className='wks'; wksSpan.textContent=`activ: ${v.wks.map(w=>'S'+w).join(', ')}`;
+      right.appendChild(wksSpan); right.appendChild(makeInfoBtn(v.x[6]));
+      d.appendChild(left); d.appendChild(right);
+      V.appendChild(d);
+    });
+  });
+}
+
+/* ===== popover de informații ===== */
+let activeInfoBtn=null;
+function ensurePopover(){
+  let p=document.getElementById('infoPop');
+  if(!p){
+    p=document.createElement('div'); p.id='infoPop'; p.className='popover';
+    p.innerHTML='<div class="pop-arrow"></div><button class="pop-close" type="button" aria-label="Închide">×</button><div class="pop-body"></div>';
+    document.body.appendChild(p);
+    p.querySelector('.pop-close').addEventListener('click', hideInfo);
+  }
+  return p;
+}
+function showInfo(btn, text){
+  const p=ensurePopover();
+  p.querySelector('.pop-body').textContent=text;
+  p.classList.add('show');
+  requestAnimationFrame(()=>{
+    const r=btn.getBoundingClientRect();
+    const pw=Math.min(300, window.innerWidth-24);
+    p.style.width=pw+'px';
+    let left=r.left + r.width/2 - pw/2;
+    left=Math.max(12, Math.min(left, window.innerWidth-pw-12));
+    const estH=p.offsetHeight||90;
+    let top=r.bottom+10, bottomArrow=false;
+    if(top+estH > window.innerHeight-12){ top=r.top-estH-10; bottomArrow=true; }
+    p.style.left=left+'px'; p.style.top=top+'px';
+    p.classList.toggle('arrow-bottom', bottomArrow);
+    const arrowLeft=Math.max(10, Math.min(r.left + r.width/2 - left - 6, pw-22));
+    p.querySelector('.pop-arrow').style.left=arrowLeft+'px';
+  });
+  if(activeInfoBtn) activeInfoBtn.setAttribute('aria-expanded','false');
+  activeInfoBtn=btn; btn.setAttribute('aria-expanded','true');
+}
+function hideInfo(){
+  const p=document.getElementById('infoPop');
+  if(p) p.classList.remove('show');
+  if(activeInfoBtn) activeInfoBtn.setAttribute('aria-expanded','false');
+  activeInfoBtn=null;
+}
+document.addEventListener('click',(e)=>{
+  if(e.target.closest('.infoBtn')||e.target.closest('#infoPop')) return;
+  hideInfo();
+});
+document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') hideInfo(); });
+window.addEventListener('scroll', hideInfo, true);
+window.addEventListener('resize', hideInfo);
+
+/* ===== taburi ===== */
+const tC=document.getElementById('tabChk'), tI=document.getElementById('tabInv');
+function setView(v){ view=v; hideInfo();
+  tC.classList.toggle('on',v==='chk'); tI.classList.toggle('on',v==='inv');
+  tC.setAttribute('aria-selected',v==='chk'); tI.setAttribute('aria-selected',v==='inv');
+  document.getElementById('viewChk').style.display=v==='chk'?'':'none';
+  document.getElementById('viewInv').style.display=v==='inv'?'':'none';
+  document.getElementById('foot').style.display=v==='chk'?'':'none';
+}
+tC.onclick=()=>setView('chk'); tI.onclick=()=>setView('inv');
+
+/* ===== temă (mod întunecat) ===== */
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); themeBtn.setAttribute('aria-pressed', t==='dark'); }
+async function getSavedTheme(){
+  try{ if(window.storage){ const r=await window.storage.get('papapp_theme'); if(r) return r.value; } }catch(e){}
+  try{ const v=localStorage.getItem('papapp_theme'); if(v) return v; }catch(e){}
+  return null;
+}
+async function saveTheme(t){
+  try{ if(window.storage) await window.storage.set('papapp_theme', t); }catch(e){}
+  try{ localStorage.setItem('papapp_theme', t); }catch(e){}
+}
+themeBtn.onclick=async()=>{
+  const next = document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+  applyTheme(next); await saveTheme(next);
+};
+(async()=>{
+  const saved = await getSavedTheme();
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+})();
+
+/* ===== start ===== */
+(async()=>{ try{ sel=await store.get()||{} }catch(e){ sel={} } renderWeek(); renderInv(); })();
+</script>
+</body>
+</html>
