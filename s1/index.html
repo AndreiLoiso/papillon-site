@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E6F6A">
+<title>Papillon · Săptămâna 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF2EE; --surface:#FFFFFF; --ink:#1B2A29; --muted:#566866; --line:#D3DDD8;
+  --accent:#1E6F6A; --accent-ink:#FFFFFF; --accent-soft:#DCEEEB;
+  --leaf:#8DB63A; --leaf-soft:#EAF3D2;
+  --tip:#FBF1D4; --tip-ink:#5A4509; --short:#E3F0E4; --short-ink:#26502C;
+  --danger:#A23B2F;
+  --shadow:0 1px 2px rgba(20,40,38,.06),0 6px 18px rgba(20,40,38,.05);
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0E1718; --surface:#162324; --ink:#E5EEEB; --muted:#90A7A3; --line:#26393A;
+  --accent:#5EC4B8; --accent-ink:#06201D; --accent-soft:#1B3836;
+  --leaf:#A8CC4A; --leaf-soft:#27331A;
+  --tip:#2D2A14; --tip-ink:#E8D79A; --short:#17301E; --short-ink:#B5DDB9;
+  --danger:#E0857A;
+  --shadow:none;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1718; --surface:#162324; --ink:#E5EEEB; --muted:#90A7A3; --line:#26393A;
+    --accent:#5EC4B8; --accent-ink:#06201D; --accent-soft:#1B3836;
+    --leaf:#A8CC4A; --leaf-soft:#27331A;
+    --tip:#2D2A14; --tip-ink:#E8D79A; --short:#17301E; --short-ink:#B5DDB9;
+    --danger:#E0857A; --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0 0 .4em;letter-spacing:-.005em}
+h1{font-size:1.7rem} h2{font-size:1.25rem} h3{font-size:1.05rem}
+p{margin:0 0 .8em}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:640px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;font:600 1.1rem var(--serif);text-decoration:none;color:var(--ink)}
+.brand small{font:500 .8rem var(--sans);color:var(--muted);margin-left:2px}
+.spacer{flex:1}
+.iconbtn{background:none;border:1px solid var(--line);border-radius:10px;width:38px;height:38px;display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.testbadge{font-size:.72rem;background:var(--leaf-soft);color:var(--ink);border:1px solid var(--leaf);padding:2px 8px;border-radius:999px}
+
+main{max-width:640px;margin:0 auto;padding:18px 16px 110px}
+.view>*+*{margin-top:14px}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.nav-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.nav a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 9px;text-decoration:none;color:var(--muted);font-size:.74rem;font-weight:500}
+.nav a svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav a[aria-current="page"]{color:var(--accent);font-weight:700}
+.nav a[aria-current="page"] svg{stroke-width:2.3}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.card.flat{box-shadow:none}
+.card h2,.card h3{margin-bottom:.3em}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+.chip{font-size:.78rem;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--ink);border:1px solid transparent}
+.chip.ghost{background:none;border-color:var(--line);color:var(--muted)}
+
+/* hero + caterpillar */
+.hero{padding:18px 16px 12px;border-radius:20px;background:linear-gradient(180deg,var(--leaf-soft),var(--surface) 85%);border:1px solid var(--line)}
+.hero h1{margin-bottom:.1em}
+.hero .sub{color:var(--muted);margin-bottom:6px}
+.cat{width:100%;height:auto;display:block;margin:4px 0 0}
+.cat .head{fill:var(--leaf)}
+.cat .eye{fill:var(--ink)}
+.cat .smile,.cat .ant{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round}
+.cat .seg{cursor:pointer}
+.cat .ring{fill:var(--surface);stroke:var(--line);stroke-width:2.5}
+.cat .fill{fill:var(--leaf)}
+.cat .sel .ring{stroke:var(--accent);stroke-width:4}
+.cat .dn{fill:var(--muted);font:600 11px var(--sans);text-anchor:middle}
+.cat .sel .dn{fill:var(--accent)}
+.cat .td{fill:var(--accent)}
+.daylabel{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:6px}
+.daylabel b{font:600 1.05rem var(--serif)}
+
+/* moment sections */
+.moment-h{display:flex;align-items:baseline;gap:8px;margin:0 0 4px}
+.moment-h small{color:var(--muted)}
+.rows{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .grow{flex:1;min-width:0}
+.row b{font-weight:600;display:block;line-height:1.3}
+.row small{color:var(--muted)}
+.check{appearance:none;-webkit-appearance:none;width:26px;height:26px;flex:none;border:2px solid var(--muted);border-radius:8px;background:var(--surface);display:grid;place-items:center;cursor:pointer;margin:0}
+.check:checked{background:var(--accent);border-color:var(--accent)}
+.check:checked::after{content:"";width:6px;height:12px;border:solid var(--accent-ink);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.go{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;color:var(--muted);text-decoration:none;flex:none}
+.go svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.row.done b{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.mini{display:flex;gap:6px;align-items:center;color:var(--muted)}
+.mini svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.mini .on{color:var(--accent)}
+
+.summary{display:flex;gap:10px}
+.stat{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat b{display:block;font:600 1.5rem var(--serif)}
+.stat span{font-size:.82rem;color:var(--muted)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:12px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600;cursor:pointer;text-decoration:none}
+.btn.ghost{background:none;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:.9rem}
+.btn.danger{border-color:var(--danger);color:var(--danger);background:none}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+
+/* media slots */
+.slot{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.slot-h{display:flex;align-items:center;gap:10px}
+.slot-h svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.slot-h b{display:block;line-height:1.2}
+.slot-h small{color:var(--muted)}
+.slot.empty{border-style:dashed;background:transparent}
+.slot.empty .slot-h svg{stroke:var(--muted)}
+.slot audio{width:100%}
+.slot video,.slot iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000}
+.adm{display:flex;gap:6px}
+.adm input{flex:1;min-width:0}
+
+/* steps and boxes */
+.steps{list-style:none;counter-reset:s;padding:0;margin:8px 0 0}
+.steps li{counter-increment:s;position:relative;padding:8px 0 8px 40px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:8px;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--ink);font-weight:700;font-size:.9rem;display:grid;place-items:center}
+.box{border-radius:14px;padding:12px 14px}
+.box b{display:block;margin-bottom:2px}
+.box.tip{background:var(--tip);color:var(--tip-ink)}
+.box.short{background:var(--short);color:var(--short-ink)}
+.box.ex{border:1px solid var(--line);font-style:italic}
+.bullets{margin:6px 0 0;padding-left:20px}
+.bullets li{margin:4px 0}
+
+/* timer */
+.timer{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.timer .tt{font:600 1.7rem var(--serif);min-width:4.2ch;font-variant-numeric:tabular-nums}
+
+/* forms */
+label.f{display:block;font-weight:600;font-size:.95rem;margin:12px 0 4px}
+textarea,input[type=text],input[type=date],input[type=number],select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-height:44px}
+textarea{min-height:76px;resize:vertical;line-height:1.45}
+.q{margin-top:12px}
+.q label{font-weight:600;display:block;margin-bottom:4px}
+.q .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);font-size:.82rem;margin-right:8px}
+.grat{display:grid;gap:8px}
+.saved{font-size:.8rem;color:var(--muted)}
+
+/* segmented tabs */
+.seg-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.seg-tabs button{flex:1;border:0;background:none;border-radius:9px;min-height:38px;cursor:pointer;color:var(--muted);font-weight:600}
+.seg-tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+
+/* radar */
+.radar{width:100%;height:auto;display:block}
+.radar .ring{fill:none;stroke:var(--line);stroke-width:1}
+.radar .axis{stroke:var(--line);stroke-width:1}
+.radar .poly{fill:color-mix(in srgb,var(--accent) 28%,transparent);stroke:var(--accent);stroke-width:2.2}
+.radar .dot{fill:var(--accent)}
+.radar text{fill:var(--ink);font:500 10.5px var(--sans)}
+.dom{padding:10px 0;border-top:1px solid var(--line)}
+.dom:first-child{border-top:0}
+.dom-top{display:flex;gap:8px;align-items:center}
+.dom-top input[type=text]{flex:1;min-height:38px;padding:6px 10px}
+.dom-v{font:600 1.2rem var(--serif);width:2ch;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
+.dom .note{margin-top:6px}
+
+/* theory */
+.tcard{display:block;text-decoration:none;color:inherit}
+.tcard h3{margin-bottom:2px}
+.lead{font:500 1.05rem/1.4 var(--serif);color:var(--muted);margin-bottom:10px}
+.band{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.band div{background:var(--leaf-soft);border-radius:12px;padding:10px;text-align:center}
+.band b{display:block;font-family:var(--serif)}
+.band span{font-size:.82rem;color:var(--muted)}
+.weeks{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.weeks li{display:flex;gap:10px;align-items:baseline;padding:6px 8px;border-radius:10px;font-size:.92rem;color:var(--muted)}
+.weeks li b{width:3.4ch;color:inherit}
+.weeks li.now{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.pager{display:flex;justify-content:space-between;gap:8px}
+
+/* feedback */
+.rate{display:flex;gap:6px}
+.rate button{flex:1;min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;font-weight:700;cursor:pointer}
+.rate button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fbq{display:flex;gap:8px;margin:8px 0}
+.fbq button{flex:1;min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;cursor:pointer;font-weight:600}
+.fbq button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.hist details{border-top:1px solid var(--line);padding:8px 0}
+.hist summary{cursor:pointer;font-weight:600}
+.hist p{margin:6px 0 0}
+
+/* dialog + toast */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(10,20,20,.55);display:grid;place-items:center;padding:16px}
+.overlay[hidden]{display:none}
+.overlay .dlg{background:var(--surface);color:var(--ink);border-radius:20px;max-width:440px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.dlg{padding:22px}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:.9rem;z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* notițe de revizuire (pentru Adela) */
+.review{margin-top:28px;padding:16px;border-radius:16px;border:2px dashed #C9871A;background:var(--tip);color:var(--tip-ink)}
+.review h2{font-size:1.1rem;margin-bottom:.3em}
+.review textarea{background:var(--surface);color:var(--ink)}
+.review .btn{border-color:#9C6A12;background:#9C6A12;color:#fff}
+.review .btn.ghost{background:none;color:inherit;border-color:#9C6A12}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="brand" href="#/azi">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 15c-3-8-10-10-13-7-2 3 1 9 6 10-4 1-5 6-2 8 3 2 7-1 9-5z" fill="#8DB63A"/><path d="M16 15c3-8 10-10 13-7 2 3-1 9-6 10 4 1 5 6 2 8-3 2-7-1-9-5z" fill="#1E6F6A"/><rect x="15" y="9" width="2" height="16" rx="1" fill="currentColor"/></svg>
+    Papillon <small>Săptămâna 1</small>
+  </a>
+  <span class="testbadge">versiune de test</span>
+  <span class="spacer"></span>
+  <button class="iconbtn" id="themeBtn" aria-label="Schimbă tema luminos / întunecat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg></button>
+</div></header>
+<main><div id="view" class="view" aria-live="polite"></div></main>
+<nav class="nav" aria-label="Navigare principală"><div class="nav-in" id="nav"></div></nav>
+<div class="toast" id="toast" role="status"></div>
+<div id="welcome" class="overlay" role="dialog" aria-modal="true" aria-label="Bun venit" hidden></div>
+<div id="fatal" hidden style="position:fixed;left:8px;right:8px;top:8px;z-index:99;background:#fff3f0;color:#7a1f14;border:1px solid #d9806f;border-radius:10px;padding:10px;font:13px/1.4 system-ui"></div>
+<script>
+window.addEventListener("error",function(e){var f=document.getElementById("fatal");if(f){f.hidden=false;f.textContent="Eroare: "+(e.message||e.error)+" ("+(e.lineno||"")+")";}});
+'use strict';
+/* ============================================================
+   Papillon · Săptămâna 1 — conținut și configurare
+   Aici se editează: linkurile media (MEDIA), emailul de feedback,
+   textele exercițiilor și ale teoriei.
+   ============================================================ */
+
+const CONFIG = {
+  version: 'S1-test-0.1',
+  // Adresa la care clienții trimit feedback-ul (lasă gol → feedback-ul se copiază / se descarcă)
+  feedbackEmail: '',
+  // Mod revizuire: afișează câmpul „Pentru Adela” la finalul fiecărei pagini. După aprobare: false.
+  reviewMode: true,
+  // Opțional: adresa la care se trimit notițele de revizuire (dacă lipsește, se folosește Partajare / copiere)
+  reviewEmail: '',
+};
+
+/* ---- MEDIA -------------------------------------------------
+   Pentru fiecare exercițiu / concept: audio (instrucțiuni) și video (explicații).
+   Acceptă: link YouTube / Vimeo, fișier .mp4/.webm, fișier .mp3/.m4a,
+   sau cale relativă (ex. 'media/impamantare.mp3').
+   Gol ('') → clientul vede „Disponibil în curând".
+   Pentru test rapid fără a edita fișierul: deschide aplicația cu ?admin=1
+   ------------------------------------------------------------ */
+const MEDIA = {
+  'impamantare':      { audio: '', video: '' },
+  'curatare':         { audio: '', video: '' },
+  'superman':         { audio: '', video: '' },
+  'plimbare':         { audio: '', video: '' },
+  'detaliu':          { audio: '', video: '' },
+  'intrebari-seara':  { audio: '', video: '' },
+  'roata':            { audio: '', video: '' },
+  'obiective':        { audio: '', video: '' },
+  'a-fi':             { audio: '', video: 'https://www.youtube.com/watch?v=j7g9FqFgOSA' },
+  'a-fi-liber':       { audio: '', video: '' },
+  'a-fi-magic':       { audio: '', video: '' },
+  'creator-vreator':  { audio: '', video: '' },
+};
+
+const MOMENTS = {
+  dimineata: { label: 'Dimineața', sub: 'Corpul' },
+  ziua:      { label: 'Ziua',      sub: 'Sufletul' },
+  seara:     { label: 'Seara',     sub: 'Mintea' },
+  punctual:  { label: 'O singură dată', sub: 'Punctual' },
+};
+
+/* ---- EXERCIȚII --------------------------------------------- */
+const EX = [
+  {
+    id: 'impamantare', title: 'Împământare / conectare ancestrală',
+    moment: 'dimineata', pilon: 'Corp', cat: 'Energetic', min: 3, freq: 'zilnic',
+    scop: 'Reconectarea conștientă cu energia Pământului chiar la începutul zilei, ca ancoră fizică și energetică înaintea oricărei alte acțiuni. În paralel, exercițiul te leagă simbolic de linia ta ancestrală — de tot ce a venit înaintea ta și te susține, chiar dacă nu vezi asta.',
+    pasi: [
+      'Stai în picioare, desculț dacă poți (pe podea, iarbă sau pământ).',
+      'Închide ochii și imaginează-ți rădăcini care coboară din tălpile tale spre centrul Pământului.',
+      'Respiră adânc de 2–3 ori, simțind cum, cu fiecare expir, „cobori" rădăcinile mai adânc.',
+      'Rostește, în gând sau cu voce joasă, o intenție scurtă de conectare cu linia ta ancestrală — de exemplu: „Mă conectez la forța celor dinaintea mea."',
+      'Rămâi 30–60 de secunde în această stare, simțind stabilitatea.',
+    ],
+    tip: 'Fă-l chiar dacă ești grăbit — varianta de 30 de secunde tot contează, mai bine decât s-o sari complet. Dacă nu poți fi desculț (birou, frig), vizualizarea singură funcționează. Leagă-l de un obicei deja existent (de exemplu, imediat cum te dai jos din pat) — se automatizează mai repede.',
+    exemplu: 'Dimineața, înainte de cafea, stai lângă fereastră cu tălpile goale pe podea. Îți iei 3 respirații și simți, poate pentru prima dată conștient, greutatea propriului corp așezată stabil pe sol.',
+    shortcut: 'După câteva săptămâni de practică, o singură respirație profundă cu intenția „sunt ancorat" poate declanșa aceeași stare.',
+    next: 'Urmează firesc Curățarea energetică. Din săptămâna 2 devine parte din exercițiul Cer-OM-Pământ.',
+    theory: ['a-fi-magic'],
+  },
+  {
+    id: 'curatare', title: 'Curățare energetică',
+    moment: 'dimineata', pilon: 'Corp', cat: 'Energetic', min: 3, freq: 'zilnic',
+    scop: 'Eliberarea energiilor care nu-ți aparțin — acumulate din interacțiuni, spații sau din ziua anterioară — înainte de a începe una nouă „curat".',
+    pasi: [
+      'Continuă din postura de împământare (sau începe direct, stând confortabil).',
+      'Inspiră adânc și, la expir, imaginează-ți cum elimini din corp orice energie străină, sub formă de fum sau ceață care se scurge prin tălpi în Pământ.',
+      'Repetă de 3 ori, cu intenția clară: „Eliberez tot ce nu-mi aparține."',
+      'Opțional, „scutură" ușor mâinile și brațele, ca și cum ai scutura apă de pe ele.',
+    ],
+    tip: 'Nu e nevoie să „crezi" perfect în vizualizare ca să funcționeze — intenția clară contează mai mult decât imaginea mentală detaliată. Dacă simți o zonă anume încărcată (ceafă, stomac), direcționează respirația acolo.',
+    exemplu: 'După o zi grea, dimineața următoare poți simți nevoia acută de acest exercițiu — îl faci puțin mai lung, cu 5–6 expirații conștiente în loc de 3.',
+    shortcut: 'O singură expirație lungă, conștientă, cu intenția de eliberare, funcționează ca „reset" rapid oricând în timpul zilei, nu doar dimineața.',
+    theory: ['a-fi-magic'],
+  },
+  {
+    id: 'superman', title: 'Postura Superman + 3 respirații profunde',
+    moment: 'dimineata', pilon: 'Corp', cat: 'Fizic', min: 2, freq: 'zilnic',
+    scop: 'O schimbare fizică deliberată a posturii transmite corpului — și, simbolic, universului — mesajul „mă schimb". Postura deschisă activează și starea psihologică de încredere: postura influențează starea, nu doar invers. După exercițiu, comportă-te ca Superman toată ziua.',
+    pasi: [
+      'Stai în fața unei ferestre sau într-un spațiu deschis.',
+      'Depărtează picioarele la nivelul umerilor.',
+      'Pune mâinile în șolduri, coatele larg deschise.',
+      'Ține capul drept, pieptul deschis (imaginează-ți chakra inimii deschisă).',
+      'Inspiră și expiră profund, minimum 3 respirații.',
+      'Simte-te, pentru câteva secunde, exact ca Superman — puternic, capabil, deschis.',
+    ],
+    tip: 'Fă-o în fața unei ferestre sau afară, dacă poți — lumina naturală amplifică efectul.',
+    exemplu: 'În loc să te aduni ghemuit peste telefon la trezire, te ridici, mergi la fereastră și îți iei acest minut de postură deschisă înainte de prima veste sau notificare a zilei.',
+    next: 'Din săptămâna 2, postura Superman se mută în pauza de zi.',
+    theory: ['a-fi-magic', 'a-fi-liber'],
+  },
+  {
+    id: 'plimbare', title: 'Plimbare conștientă în natură',
+    moment: 'ziua', pilon: 'Suflet', cat: 'Natură', min: 5, freq: 'zilnic',
+    scop: 'O pauză de conectare cu natura în mijlocul zilei — nu ca evadare, ci ca reamintire conștientă că faci parte dintr-un întreg mai mare decât sarcinile zilei.',
+    pasi: [
+      'Ieși afară — grădină, parc, chiar și un copac de pe stradă e suficient.',
+      'Mergi minimum 3–5 minute, fără telefon în mână.',
+      'Lasă atenția să se așeze pe ce te înconjoară: sunete, mirosuri, texturi, lumină.',
+      'Nu trebuie să fie contemplativ sau lent — contează și în mers rapid sau cu câinele, atât timp cât ești prezent.',
+    ],
+    tip: 'Nu ai nevoie de natură „sălbatică" — un ghiveci, un copac urban sau cerul sunt suficiente.',
+    theory: ['a-fi-magic'],
+  },
+  {
+    id: 'detaliu', title: 'Un detaliu care te atrage — 3–5 cuvinte',
+    moment: 'ziua', pilon: 'Suflet', cat: 'Natură', min: 3, freq: 'zilnic', tool: 'urme',
+    scop: 'Antrenarea atenției fine: alegi conștient un singur detaliu din natură și îl „traduci" în cuvinte, ceea ce te obligă la o observare reală, nu la o privire în trecere.',
+    pasi: [
+      'În timpul plimbării conștiente, lasă un detaliu să-ți atragă atenția (o frunză, o textură de scoarță, un joc de lumină).',
+      'Oprește-te scurt la el.',
+      'Fotografiază-l sau desenează-l rapid.',
+      'Descrie, în 3–5 cuvinte, ce te-a atras la el.',
+    ],
+    tip: 'Nu gândi prea mult cuvintele — primele care vin sunt cele mai sincere.',
+    next: 'Notează în fișa de mai jos („Urme ale mersului conștient"): data, cuvintele tale și, dacă vrei, de ce l-ai ales. Fotografia sau desenul rămân în telefonul tău.',
+    theory: ['a-fi'],
+  },
+  {
+    id: 'intrebari-seara', title: 'Cele 5 întrebări de seară',
+    moment: 'seara', pilon: 'Minte', cat: 'Jurnal', min: 10, freq: 'zilnic', tool: 'seara',
+    scop: 'Recapitularea zilei printr-un set fix de întrebări — creează obiceiul reflecției zilnice și devine, pe termen lung, una din coloanele programului.',
+    pasi: [
+      'Ce am realizat astăzi?',
+      'Am obținut cel mai important rezultat al meu?',
+      'Ce am învățat?',
+      'Ce pot îmbunătăți?',
+      'Trei lucruri / oameni pentru care sunt recunoscător astăzi — le mulțumesc.',
+    ],
+    pasiLabel: 'Întrebările',
+    clarificari: [
+      'Întrebarea 1 se referă la sarcinile pe care le-ai bifat.',
+      'Întrebarea 2 se referă la cel mai important lucru al zilei — poate fi o conversație sau un moment de frumusețe.',
+      'Recunoștința poate fi pentru lucruri mici.',
+    ],
+    tip: 'Scrie chiar dacă răspunsurile sunt scurte — 2 rânduri sunt suficiente, important e ritmul zilnic. Dacă ziua a fost proastă, întrebarea de recunoștință e cea mai importantă de completat, nu de sărit.',
+    exemplu: 'Am realizat: am terminat raportul. Cel mai important rezultat: o conversație sinceră. Am învățat: că amân lucrurile grele dimineața. Pot îmbunătăți: să încep cu ele, nu cu ce e ușor. Recunoscător pentru: cafeaua bună, un mesaj de la un prieten, soarele de după-amiază.',
+    shortcut: 'Pe zilele foarte încărcate poți răspunde doar în gând, cât timp te speli pe dinți — nu e la fel de puternic ca scrisul, dar păstrează lanțul obiceiului.',
+    next: 'Din săptămâna 4 se extinde la 7 întrebări.',
+    theory: ['creator-vreator', 'a-fi-liber'],
+  },
+  {
+    id: 'roata', title: 'Roata Vieții — evaluare inițială',
+    moment: 'punctual', pilon: 'Minte', cat: 'Viziune', min: 60, freq: 'o dată', tool: 'roata',
+    scop: 'O „fotografie" a satisfacției tale actuale pe domeniile principale ale vieții, notată pe o scală 0–10. Devine punctul de referință față de care se măsoară progresul întregului program — la final se reface și se compară.',
+    pasi: [
+      'Alege 8–10 domenii importante ale vieții tale (poți redenumi domeniile de mai jos).',
+      'Pentru fiecare domeniu, notează un scor de satisfacție de la 0 (deloc) la 10 (complet mulțumit).',
+      'Privește forma roții — vezi unde e echilibrat și unde nu.',
+      'Pentru fiecare domeniu cu scor sub 7, notează un gând scurt despre ce lipsește.',
+    ],
+    tip: 'Fii sincer, nu „cum ar trebui să fie" — scorul e pentru tine, nu pentru validare externă.',
+    next: 'Păstrează roata completată acum: la finalul programului o refaci și le comparați. Fundamentează Stabilirea obiectivelor (imediat după) și, mai târziu, Vision Board și SPI.',
+    theory: ['a-fi', 'creator-vreator'],
+  },
+  {
+    id: 'obiective', title: 'Stabilirea obiectivelor programului',
+    moment: 'punctual', pilon: 'Minte', cat: 'Viziune', min: 30, freq: 'o dată', tool: 'obiective',
+    scop: 'Clarificarea, în scris, a ceea ce vrei să obții din acest parcurs de 12 săptămâni — un reper la care te poți întoarce oricând simți că ai pierdut direcția.',
+    pasi: [
+      'Pe baza Roții Vieții completate, alege 2–3 domenii prioritare pentru acest parcurs.',
+      'Scrie, pentru fiecare, un obiectiv concret (nu vag) — ce ai vrea să fie diferit la finalul celor 12 săptămâni.',
+      'Notează și un „de ce" pentru fiecare — motivația reală din spatele lui.',
+    ],
+    tip: 'Nu urmări perfecțiunea formulării — poți reveni și ajusta obiectivele oricând pe parcurs.',
+    exemplu: '„Vreau să am o rutină de somn stabilă (obiectiv), pentru că observ că lipsa de somn îmi afectează răbdarea cu familia (de ce)."',
+    next: 'Obiectivele se rafinează mai târziu în program și capătă un plan concret.',
+    theory: ['creator-vreator', 'a-fi'],
+  },
+  {
+    id: 'lecturi', title: 'Lecturile recomandate',
+    moment: 'punctual', pilon: 'Minte', cat: 'Studiu', min: 0, freq: 'opțional', optional: true,
+    scop: 'Explorarea listei de lecturi recomandate de program — opțional, în ritmul tău.',
+    pasi: ['Deschide pagina „Lectures" din platforma programului și alege ce te atrage.'],
+    theory: [],
+  },
+];
+
+/* ---- TEORIE ------------------------------------------------- */
+const THEORY_INTRO = {
+  titlu: 'Unde ești în program',
+  paragrafe: [
+    'Prima săptămână pune bazele întregului program pe două planuri: definește conceptele de identitate și libertate (cine ești, ce înseamnă să fii liber) și pune corpul în mișcare — pentru că, dintre toate nivelurile ființei, corpul se adaptează cel mai lent la schimbare, deci cu el se începe.',
+    'Programul lucrează pe două axe: mișcarea orizontală (exercițiile fizice și energetice zilnice) și mișcarea verticală (explorarea interioară — scufundarea în subconștient și înălțarea spre supraconștient). Săptămâna 1 deschide axa orizontală; cea verticală se deschide din etapa următoare.',
+  ],
+  zi: 'Structura zilnică instituită acum rămâne coloana vertebrală a întregului program: dimineața — corpul, ziua — sufletul, seara — mintea.',
+};
+
+const THEORY = [
+  {
+    id: 'a-fi', titlu: 'A Fi', scurt: 'Cine ești tu, cu adevărat?',
+    text: [
+      'Totul pornește de la întrebarea fundamentală: cine ești tu, cu adevărat? Metafora animalelor — iepure, leu, vultur — ilustrează că fiecare ființă are o natură intrinsecă. Un iepure nu merge la vânătoare; un vultur nu caută morcovi.',
+      'Fără să știi cine ești, nu poți alege o direcție; odată ce îți cunoști natura, acțiunile devin firești și aliniate.',
+    ],
+    intrebare: 'Dacă ai fi un animal, care ar fi — și de ce?',
+    sursa: 'Video „A Fi" (S1)',
+    ex: ['detaliu', 'roata', 'obiective'],
+  },
+  {
+    id: 'a-fi-liber', titlu: 'A Fi Liber', scurt: 'Libertatea ca alegere conștientă.',
+    text: [
+      'Libertatea autentică nu înseamnă absența stresului sau a responsabilităților, ci alegerea conștientă: să știi de ce faci ceea ce faci, să-ți cunoști misiunea.',
+      'Barele închisorii interioare sunt condiționările din copilărie, temerile, programele parentale, credințele limitative. Transformarea constă în a le da jos una câte una — nu prin forță, ci prin conștientizare. Depășirea propriilor limite face parte din ceea ce ne face să ne simțim împliniți.',
+    ],
+    intrebare: 'Ce „bară" din închisoarea ta interioară ai observat deja?',
+    sursa: 'Video „A Fi Liber" (S1)',
+    ex: ['superman', 'intrebari-seara'],
+  },
+  {
+    id: 'a-fi-magic', titlu: 'A Fi Magic', scurt: 'Magia ca putere nativă de a transforma stări.',
+    text: [
+      'Magia nu este ceva supranatural: este puterea nativă a fiecărui om de a transforma stări și situații prin intenție.',
+      'Mâna pusă pe genunchiul lovit al unui copil calmează durerea; o îmbrățișare schimbă starea cuiva; un zâmbet primește zâmbet înapoi. Capacitățile ființei umane sunt infinite — magia este aceste capacități trăite conștient.',
+    ],
+    intrebare: 'Când ai schimbat ultima dată o stare — a ta sau a altcuiva — printr-un gest simplu?',
+    sursa: 'Video „A Fi Magic" (S1)',
+    ex: ['impamantare', 'curatare', 'superman', 'plimbare'],
+  },
+  {
+    id: 'creator-vreator', titlu: 'Creator vs. Vreator', scurt: 'A FI → A FACE → A AVEA',
+    text: [
+      'Lumea în care trăim este trinitară (3D = trei vectori): A FI → A FACE → A AVEA. Un Creator parcurge toți trei vectorii: este, acționează, obține.',
+      'Un Vreator rămâne blocat la dorință, fără acțiune — iar dorința fără acțiune nu produce nimic în lumea 3D. Paharul cu apă nu vine singur la tine: pe Pământ, pentru a materializa, trebuie să acționezi.',
+    ],
+    intrebare: 'Unde ești acum, în dreptul unei dorințe importante: la A FI, la A FACE sau la A AVEA?',
+    sursa: 'Video „Creator vs. Vreator" și „Punerea în mișcare" (S1)',
+    ex: ['intrebari-seara', 'obiective', 'roata'],
+  },
+];
+
+const INTEGRARE = [
+  'Săptămâna 1 este fundația: instituie jurnalul de seară și structura zilnică pe trei timpi (corp, suflet, minte) — două dintre cele trei elemente care rămân pe tot parcursul programului.',
+  'Conceptul A FI → A FACE → A AVEA revine ca schelet al întregului parcurs și se închide spre finalul programului.',
+  'Roata Vieții deschide firul viziunii, care continuă mai târziu cu Vision Board, SPI și Proiectul de Viață.',
+];
+
+const WEEKS = [
+  'Punerea în mișcare', 'Fă puțin spațiu', 'Sens, părți interioare, împământare',
+  'Echilibrarea percepțiilor, chakrele', 'Sistemul energetic în profunzime',
+  'Anti-sabotaj, Formula Magică', 'SPI, moștenirea, 5 Rituri', 'Muntele, echilibrare SPI, corpul',
+  'Harta interioară, recunoștința, eliberarea', 'Echipa interioară, FRI, magia apei',
+  'Copilul interior, destinul, aripile', 'Tema de viață, numerologia, jocul',
+];
+
+const DEFAULT_DOMAINS = [
+  'Relații sociale', 'Familie', 'Carieră', 'Viață romantică', 'Timp liber',
+  'Contribuție la lume', 'Sănătate', 'Mediu personal', 'Dezvoltare personală',
+];
+
+/* ============================================================
+   Papillon · S1 — nucleu: utilitare, stare, media, instrumente
+   ============================================================ */
+
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseD = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); return iso(d); };
+const RO_DOW = ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă'];
+const RO_MON = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+const fmtShort = s => { const d = parseD(s); return `${d.getDate()} ${RO_MON[d.getMonth()]}`; };
+const fmtLong = s => { const d = parseD(s); return `${RO_DOW[d.getDay()]}, ${d.getDate()} ${RO_MON[d.getMonth()]}`; };
+const todayISO = () => iso(new Date());
+
+/* ---- icoane ---- */
+const ICON = {
+  azi: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
+  ex: '<path d="M4 7h16M4 12h16M4 17h10"/>',
+  teorie: '<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M8 20a3 3 0 0 1-3-3"/>',
+  jurnal: '<path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 7l3 3"/>',
+  feedback: '<path d="M4 5h16v11H9l-5 4V5z"/>',
+  chev: '<path d="M9 6l6 6-6 6"/>',
+  audio: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  video: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5l5 2.5-5 2.5z"/>',
+  moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',
+};
+const svg = (k, cls = '') => `<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>`;
+
+/* ---- stare ---- */
+const KEY = 'papillon_s1_v1';
+const defaults = () => ({
+  v: 1,
+  profile: { name: '', start: todayISO(), done: false },
+  checks: {}, journal: {}, traces: {}, reflect: {},
+  roata: { domains: DEFAULT_DOMAINS.map(n => ({ n, v: 5, note: '' })), savedAt: '', history: [] },
+  goals: [{ domain: '', goal: '', why: '' }, { domain: '', goal: '', why: '' }, { domain: '', goal: '', why: '' }],
+  once: {},
+  fb: { ex: {}, gen: {} },
+  review: {},
+  stats: { opens: {}, sessions: 0, first: todayISO() },
+  media: {},
+});
+let S;
+try { S = Object.assign(defaults(), JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { S = defaults(); }
+
+let saveT = null;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* stocare indisponibilă */ }
+}
+function saveSoon() { clearTimeout(saveT); saveT = setTimeout(save, 400); }
+
+function getPath(path) {
+  return path.split('|').reduce((o, k) => (o == null ? undefined : o[k]), S);
+}
+function setPath(path, val) {
+  const ks = path.split('|'); let o = S;
+  for (let i = 0; i < ks.length - 1; i++) { if (o[ks[i]] == null) o[ks[i]] = {}; o = o[ks[i]]; }
+  o[ks[ks.length - 1]] = val;
+}
+
+/* ---- săptămâna și ziua selectată ---- */
+const weekDays = () => Array.from({ length: 7 }, (_, i) => addDays(S.profile.start, i));
+let selDay;
+function initSelDay() {
+  const w = weekDays(), t = todayISO();
+  selDay = t < w[0] ? w[0] : t > w[6] ? w[6] : t;
+}
+const DAILY = () => EX.filter(e => e.freq === 'zilnic');
+const dayDone = d => DAILY().filter(e => (S.checks[d] || {})[e.id]).length;
+const dayPct = d => dayDone(d) / DAILY().length;
+const dayMinutes = d => DAILY().filter(e => (S.checks[d] || {})[e.id]).reduce((a, e) => a + e.min, 0);
+const totalMinutes = () => DAILY().reduce((a, e) => a + e.min, 0);
+
+/* ---- omida: cele 7 zile ---- */
+function caterpillar() {
+  const days = weekDays(), t = todayISO();
+  let o = '<svg class="cat" viewBox="0 0 340 100" role="group" aria-label="Cele 7 zile ale săptămânii">';
+  o += '<path class="ant" d="M26 26c-3-11-10-16-17-16M42 26c2-11 9-17 17-17"/>';
+  o += '<circle class="head" cx="34" cy="50" r="23"/><circle class="eye" cx="26" cy="46" r="3.2"/><circle class="eye" cx="42" cy="46" r="3.2"/><path class="smile" d="M26 58q8 6 16 0"/>';
+  days.forEach((d, i) => {
+    const cx = 86 + i * 36, p = dayPct(d);
+    o += `<g class="seg ${d === selDay ? 'sel' : ''}" data-day="${d}" tabindex="0" role="button" aria-label="Ziua ${i + 1}, ${Math.round(p * 100)}% făcut">`
+      + `<circle class="ring" cx="${cx}" cy="50" r="16"/>`
+      + (p > 0 ? `<circle class="fill" cx="${cx}" cy="50" r="${(p * 13.5).toFixed(1)}"/>` : '')
+      + `<text class="dn" x="${cx}" y="85">${i + 1}</text>`
+      + (d === t ? `<circle class="td" cx="${cx}" cy="95" r="2.6"/>` : '')
+      + '</g>';
+  });
+  return o + '</svg>';
+}
+
+/* ---- media ---- */
+const ADMIN = (() => {
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.get('admin') === '1') localStorage.setItem('papillon_admin', '1');
+    if (q.get('admin') === '0') localStorage.removeItem('papillon_admin');
+    return localStorage.getItem('papillon_admin') === '1';
+  } catch (e) { return false; }
+})();
+
+const getMedia = (id, kind) => (S.media[`${id}:${kind}`] ?? (MEDIA[id] || {})[kind] ?? '').trim();
+
+function embedOf(url) {
+  let m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  if (m) return { type: 'iframe', src: `https://www.youtube-nocookie.com/embed/${m[1]}`, link: url };
+  m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (m) return { type: 'iframe', src: `https://player.vimeo.com/video/${m[1]}`, link: url };
+  if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(url)) return { type: 'video', src: url };
+  if (/\.(mp3|m4a|wav|ogg|aac)(\?|#|$)/i.test(url)) return { type: 'audio', src: url };
+  return { type: 'link', src: url };
+}
+
+function mediaSlot(id, kind) {
+  const isAudio = kind === 'audio';
+  const title = isAudio ? 'Ascultă instrucțiunile' : 'Vezi explicațiile';
+  const soon = isAudio ? 'Înregistrarea cu instrucțiunile Adelei' : 'Videoul cu explicații';
+  const url = getMedia(id, kind);
+  const adm = ADMIN ? `<div class="adm"><input type="text" placeholder="Lipește linkul ${isAudio ? 'audio' : 'video'}" value="${esc(S.media[`${id}:${kind}`] || '')}" data-media-in="${id}:${kind}"><button class="btn small" data-media-save="${id}:${kind}">Salvează</button></div>` : '';
+  if (!url) {
+    return `<div class="slot empty"><div class="slot-h">${svg(isAudio ? 'audio' : 'video')}<div><b>${title}</b><small>${soon} — disponibil în curând.</small></div></div>${adm}</div>`;
+  }
+  const e = embedOf(url);
+  let player = '';
+  if (e.type === 'iframe') player = `<iframe src="${esc(e.src)}" title="${title}" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe><a class="small" href="${esc(e.link)}" target="_blank" rel="noopener">Deschide într-o fereastră nouă</a>`;
+  else if (e.type === 'video') player = `<video controls playsinline preload="metadata" src="${esc(e.src)}"></video>`;
+  else if (e.type === 'audio') player = `<audio controls preload="none" src="${esc(e.src)}"></audio>`;
+  else player = `<a class="btn ghost small" href="${esc(e.src)}" target="_blank" rel="noopener">Deschide ${isAudio ? 'înregistrarea' : 'videoul'}</a>`;
+  return `<div class="slot"><div class="slot-h">${svg(isAudio ? 'audio' : 'video')}<div><b>${title}</b></div></div>${player}${adm}</div>`;
+}
+const hasMedia = (id, kind) => !!getMedia(id, kind);
+
+/* ---- cronometru ---- */
+let timerState = null;
+function stopTimer() { if (timerState) { clearInterval(timerState.iv); timerState = null; } }
+function beep() {
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.28].forEach((t, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.value = i ? 660 : 523; o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(0.0001, ac.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.25, ac.currentTime + t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t + 0.4);
+      o.start(ac.currentTime + t); o.stop(ac.currentTime + t + 0.45);
+    });
+  } catch (e) { /* fără sunet */ }
+  try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) { /* ignor */ }
+}
+const mmss = s => `${Math.floor(s / 60)}:${pad(s % 60)}`;
+function toggleTimer(btn) {
+  const wrap = btn.closest('.timer'), out = $('.tt', wrap), sec = +wrap.dataset.sec;
+  if (timerState) { stopTimer(); out.textContent = mmss(sec); btn.textContent = 'Pornește'; return; }
+  const end = Date.now() + sec * 1000;
+  btn.textContent = 'Oprește';
+  timerState = {
+    iv: setInterval(() => {
+      const left = Math.max(0, Math.round((end - Date.now()) / 1000));
+      out.textContent = mmss(left);
+      if (left <= 0) { stopTimer(); btn.textContent = 'Pornește'; out.textContent = 'Gata'; beep(); }
+    }, 250),
+  };
+}
+
+/* ---- instrument: jurnal de seară ---- */
+const QUESTIONS = ['Ce am realizat astăzi?', 'Am obținut cel mai important rezultat al meu?', 'Ce am învățat?', 'Ce pot îmbunătăți?'];
+function journalForm(day) {
+  const b = k => `journal|${day}|${k}`;
+  let o = '';
+  QUESTIONS.forEach((q, i) => {
+    o += `<div class="q"><label for="q${i}"><span class="n">${i + 1}</span>${esc(q)}</label><textarea id="q${i}" data-bind="${b('q' + (i + 1))}" rows="2">${esc(getPath(b('q' + (i + 1))) || '')}</textarea></div>`;
+  });
+  o += `<div class="q"><label><span class="n">5</span>Trei lucruri / oameni pentru care sunt recunoscător — le mulțumesc.</label><div class="grat">`;
+  [1, 2, 3].forEach(i => { o += `<input type="text" aria-label="Recunoștință ${i}" data-bind="${b('g' + i)}" value="${esc(getPath(b('g' + i)) || '')}">`; });
+  o += '</div></div><p class="saved">Se salvează automat, doar pe acest dispozitiv.</p>';
+  return o;
+}
+
+/* ---- instrument: urme ale mersului conștient ---- */
+function urmeForm(day) {
+  const b = k => `traces|${day}|${k}`;
+  return `<label class="f" for="uw">Detaliul descris în 3–5 cuvinte</label>
+    <input id="uw" type="text" data-bind="${b('words')}" value="${esc(getPath(b('words')) || '')}" placeholder="de exemplu: scoarță aspră, lumină caldă">
+    <label class="f" for="uy">De ce l-ai ales? (opțional)</label>
+    <textarea id="uy" rows="2" data-bind="${b('why')}">${esc(getPath(b('why')) || '')}</textarea>
+    <p class="saved">Fotografia sau desenul rămân în telefonul tău.</p>`;
+}
+
+/* ---- instrument: Roata Vieții ---- */
+function radarSVG(domains) {
+  const n = domains.length, cx = 180, cy = 168, R = 100;
+  const pt = (i, v) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return [cx + Math.cos(a) * R * v / 10, cy + Math.sin(a) * R * v / 10, a]; };
+  let o = '<svg class="radar" viewBox="-40 0 440 340" role="img" aria-label="Roata Vieții">';
+  [2, 4, 6, 8, 10].forEach(r => { o += `<polygon class="ring" points="${domains.map((_, i) => pt(i, r).slice(0, 2).map(x => x.toFixed(1)).join(',')).join(' ')}"/>`; });
+  domains.forEach((d, i) => {
+    const [x, y] = pt(i, 10); o += `<line class="axis" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;
+    const [lx, ly, a] = pt(i, 10 + 1.6 * 10 / 10 * 1.0);
+    const tx = cx + Math.cos(a) * (R + 14), ty = cy + Math.sin(a) * (R + 14) + 4;
+    const anchor = Math.cos(a) > 0.25 ? 'start' : Math.cos(a) < -0.25 ? 'end' : 'middle';
+    const name = d.n.length > 16 ? d.n.slice(0, 15) + '…' : d.n;
+    o += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="${anchor}">${esc(name)}</text>`;
+  });
+  o += `<polygon class="poly" points="${domains.map((d, i) => pt(i, d.v).slice(0, 2).map(x => x.toFixed(1)).join(',')).join(' ')}"/>`;
+  domains.forEach((d, i) => { const [x, y] = pt(i, d.v); o += `<circle class="dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4"/>`; });
+  return o + '</svg>';
+}
+function roataTool() {
+  const R = S.roata, n = R.domains.length;
+  let o = `<div id="radarBox">${radarSVG(R.domains)}</div><div id="domList">`;
+  R.domains.forEach((d, i) => {
+    o += `<div class="dom"><div class="dom-top"><input type="text" aria-label="Numele domeniului ${i + 1}" data-roata-name="${i}" value="${esc(d.n)}"><span class="dom-v" id="dv${i}">${d.v}</span></div>
+      <input type="range" min="0" max="10" step="1" value="${d.v}" aria-label="Scor ${esc(d.n)}" data-roata="${i}">
+      <div class="note" id="dn${i}" ${d.v >= 7 ? 'hidden' : ''}><input type="text" placeholder="Ce lipsește aici?" data-bind="roata|domains|${i}|note" value="${esc(d.note || '')}"></div></div>`;
+  });
+  o += '</div><div class="btns" style="margin-top:12px">';
+  if (n < 10) o += '<button class="btn ghost small" data-roata-add>Adaugă domeniu</button>';
+  if (n > 8) o += '<button class="btn ghost small" data-roata-del>Șterge ultimul domeniu</button>';
+  o += '<button class="btn" data-roata-save>Salvează roata</button></div>';
+  if (R.savedAt) o += `<p class="small muted" style="margin-top:10px">Ultima salvare: ${fmtShort(R.savedAt)}. Păstrează această roată — la finalul programului o refaci și le comparați.</p>`;
+  return o;
+}
+
+/* ---- instrument: obiective ---- */
+function obiectiveTool() {
+  const doms = S.roata.domains;
+  const low = [...doms].sort((a, b) => a.v - b.v).slice(0, 3).map(d => `${d.n} (${d.v})`);
+  let o = `<p class="small muted">Domeniile cu cel mai mic scor în Roata Vieții: ${esc(low.join(', '))}.</p>`;
+  S.goals.forEach((g, i) => {
+    o += `<div class="card flat" style="margin-top:10px"><h3>Obiectiv ${i + 1}${i === 2 ? ' (opțional)' : ''}</h3>
+      <label class="f" for="gd${i}">Domeniul</label>
+      <select id="gd${i}" data-bind="goals|${i}|domain"><option value="">Alege domeniul</option>${doms.map(d => `<option ${g.domain === d.n ? 'selected' : ''}>${esc(d.n)}</option>`).join('')}</select>
+      <label class="f" for="gg${i}">Ce vreau să fie diferit peste 12 săptămâni</label>
+      <textarea id="gg${i}" rows="2" data-bind="goals|${i}|goal">${esc(g.goal)}</textarea>
+      <label class="f" for="gw${i}">De ce îmi este important</label>
+      <textarea id="gw${i}" rows="2" data-bind="goals|${i}|why">${esc(g.why)}</textarea></div>`;
+  });
+  return o + '<p class="saved" style="margin-top:8px">Se salvează automat, doar pe acest dispozitiv.</p>';
+}
+
+/* ============================================================
+   Papillon · S1 — ecrane, rutare, evenimente
+   ============================================================ */
+
+const exById = id => EX.find(e => e.id === id);
+const thById = id => THEORY.find(t => t.id === id);
+const view = () => $('#view');
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 1800);
+}
+
+/* ---------- AZI ---------- */
+function rowEx(e, checked, opts = {}) {
+  const mm = e.min ? `${e.min} min` : 'opțional';
+  const media = `<span class="mini"><span class="${hasMedia(e.id, 'audio') ? 'on' : ''}" title="Audio">${svg('audio')}</span><span class="${hasMedia(e.id, 'video') ? 'on' : ''}" title="Video">${svg('video')}</span></span>`;
+  const box = opts.noCheck ? '' : `<input type="checkbox" class="check" ${checked ? 'checked' : ''} ${opts.once ? `data-once="${e.id}"` : `data-check="${e.id}"`} aria-label="Bifează: ${esc(e.title)}">`;
+  return `<div class="row ${checked ? 'done' : ''}">${box}<div class="grow"><b>${esc(e.title)}</b><small>${mm}</small></div>${media}<a class="go" href="#/ex/${e.id}" aria-label="Deschide ${esc(e.title)}">${svg('chev')}</a></div>`;
+}
+
+function viewAzi() {
+  const days = weekDays(), idx = days.indexOf(selDay) + 1;
+  const done = dayDone(selDay), tot = DAILY().length;
+  const ch = S.checks[selDay] || {};
+  let o = `<section class="hero"><h1>Săptămâna 1</h1><p class="sub">Punerea în mișcare — etapa Omida, fundația</p>${caterpillar()}
+    <div class="daylabel"><b>Ziua ${idx}</b><span class="muted">${fmtLong(selDay)}${selDay === todayISO() ? ' (azi)' : ''}</span></div></section>`;
+  o += `<div class="summary"><div class="stat"><b>${done} din ${tot}</b><span>exerciții bifate</span></div><div class="stat"><b>${dayMinutes(selDay)} din ${totalMinutes()}</b><span>minute</span></div></div>`;
+  ['dimineata', 'ziua', 'seara'].forEach(m => {
+    const list = DAILY().filter(e => e.moment === m);
+    o += `<section class="card"><div class="moment-h"><h2>${MOMENTS[m].label}</h2><small>${MOMENTS[m].sub}</small></div><div class="rows">${list.map(e => rowEx(e, !!ch[e.id])).join('')}</div>`;
+    if (m === 'seara') o += `<div style="margin-top:10px"><a class="btn ghost small" href="#/jurnal">Scrie în jurnal</a></div>`;
+    o += '</section>';
+  });
+  o += `<section class="card"><div class="moment-h"><h2>O singură dată</h2><small>în această săptămână</small></div><div class="rows">${EX.filter(e => e.moment === 'punctual').map(e => rowEx(e, !!S.once[e.id], { once: true, noCheck: !!e.optional })).join('')}</div></section>`;
+  return o;
+}
+
+/* ---------- EXERCIȚII ---------- */
+function viewExList() {
+  let o = `<h1>Exerciții</h1><p class="muted">Fiecare exercițiu are pașii în scris, înregistrarea audio cu instrucțiunile Adelei și videoul cu explicații. Pictogramele colorate arată ce e deja disponibil.</p>`;
+  ['dimineata', 'ziua', 'seara', 'punctual'].forEach(m => {
+    o += `<section class="card"><div class="moment-h"><h2>${MOMENTS[m].label}</h2><small>${MOMENTS[m].sub}</small></div><div class="rows">`;
+    o += EX.filter(e => e.moment === m).map(e => `<div class="row"><div class="grow"><b>${esc(e.title)}</b><small>${e.min ? e.min + ' min' : 'opțional'}, ${e.freq}</small></div><span class="mini"><span class="${hasMedia(e.id, 'audio') ? 'on' : ''}">${svg('audio')}</span><span class="${hasMedia(e.id, 'video') ? 'on' : ''}">${svg('video')}</span></span><a class="go" href="#/ex/${e.id}" aria-label="Deschide ${esc(e.title)}">${svg('chev')}</a></div>`).join('');
+    o += '</div></section>';
+  });
+  return o;
+}
+
+function viewEx(id) {
+  const e = exById(id); if (!e) return viewExList();
+  S.stats.opens[id] = (S.stats.opens[id] || 0) + 1; saveSoon();
+  const fb = S.fb.ex[id] || {};
+  let o = `<p><a href="#/ex">Toate exercițiile</a></p><h1>${esc(e.title)}</h1>
+    <div class="chips"><span class="chip">${MOMENTS[e.moment].label}</span>${e.min ? `<span class="chip">${e.min} min</span>` : ''}<span class="chip ghost">${e.freq}</span><span class="chip ghost">${e.pilon}, ${e.cat}</span></div>`;
+  o += mediaSlot(id, 'audio') + mediaSlot(id, 'video');
+  if (e.min && e.min <= 10) o += `<div class="timer" data-sec="${e.min * 60}"><span class="tt">${mmss(e.min * 60)}</span><button class="btn small" data-timer>Pornește</button><span class="small muted">Cronometru de ${e.min} min, cu sunet la final.</span></div>`;
+  o += `<section class="card"><h2>De ce</h2><p style="margin:0">${esc(e.scop)}</p></section>`;
+  o += `<section class="card"><h2>${e.pasiLabel || 'Pas cu pas'}</h2><ol class="steps">${e.pasi.map(p => `<li>${esc(p)}</li>`).join('')}</ol>`;
+  if (e.clarificari) o += `<ul class="bullets small muted">${e.clarificari.map(c => `<li>${esc(c)}</li>`).join('')}</ul>`;
+  o += '</section>';
+  if (e.tool === 'seara') o += `<section class="card"><h2>Jurnalul de azi</h2><p class="small muted">${fmtLong(selDay)}</p>${journalForm(selDay)}</section>`;
+  if (e.tool === 'urme') o += `<section class="card"><h2>Urme ale mersului conștient</h2><p class="small muted">${fmtLong(selDay)}</p>${urmeForm(selDay)}</section>`;
+  if (e.tool === 'roata') o += `<section class="card"><h2>Roata ta</h2>${roataTool()}</section>`;
+  if (e.tool === 'obiective') o += `<section class="card"><h2>Obiectivele tale</h2>${obiectiveTool()}</section>`;
+  if (e.tip) o += `<div class="box tip"><b>Sfat</b>${esc(e.tip)}</div>`;
+  if (e.exemplu) o += `<div class="box ex"><b style="font-style:normal">Exemplu</b>${esc(e.exemplu)}</div>`;
+  if (e.shortcut) o += `<div class="box short"><b>Mai târziu, cu practică</b>${esc(e.shortcut)}</div>`;
+  if (e.next) o += `<p class="muted small">${esc(e.next)}</p>`;
+  if (e.theory && e.theory.length) o += `<section class="card"><h2>Teoria din spatele exercițiului</h2><div class="rows">${e.theory.map(t => { const th = thById(t); return `<div class="row"><div class="grow"><b>${esc(th.titlu)}</b><small>${esc(th.scurt)}</small></div><a class="go" href="#/teorie/${t}" aria-label="Deschide ${esc(th.titlu)}">${svg('chev')}</a></div>`; }).join('')}</div></section>`;
+  if (e.freq === 'zilnic') {
+    const on = (S.checks[selDay] || {})[id];
+    o += `<button class="btn ${on ? 'ghost' : ''}" data-check-btn="${id}">${on ? 'Bifat azi — apasă pentru a debifa' : 'Marchez ca făcut azi'}</button>`;
+  } else if (!e.optional) {
+    const on = S.once[id];
+    o += `<button class="btn ${on ? 'ghost' : ''}" data-once-btn="${id}">${on ? 'Făcut — apasă pentru a debifa' : 'Marchez ca făcut'}</button>`;
+  }
+  o += `<section class="card flat"><h3>A fost clar acest exercițiu?</h3><div class="fbq"><button data-exfb="${id}" data-val="1" aria-pressed="${fb.r === 1}">Da, clar</button><button data-exfb="${id}" data-val="-1" aria-pressed="${fb.r === -1}">Nu prea</button></div>
+    <input type="text" placeholder="Ce ar ajuta? (opțional)" data-bind="fb|ex|${id}|c" value="${esc(fb.c || '')}"></section>`;
+  return o;
+}
+
+/* ---------- TEORIE ---------- */
+function viewTeorie() {
+  let o = `<h1>Teorie</h1><section class="card"><h2>${THEORY_INTRO.titlu}</h2>${THEORY_INTRO.paragrafe.map(p => `<p>${esc(p)}</p>`).join('')}<p class="muted" style="margin:0">${esc(THEORY_INTRO.zi)}</p>
+    <div class="band"><div><b>Dimineața</b><span>corpul</span></div><div><b>Ziua</b><span>sufletul</span></div><div><b>Seara</b><span>mintea</span></div></div></section>`;
+  o += '<h2 style="margin-top:20px">Cele patru concepte ale săptămânii</h2>';
+  THEORY.forEach(t => {
+    o += `<a class="card tcard" href="#/teorie/${t.id}" style="margin-top:10px"><h3>${esc(t.titlu)}</h3><p class="muted" style="margin:0">${esc(t.scurt)}</p>
+      <span class="mini" style="margin-top:6px"><span class="${hasMedia(t.id, 'video') ? 'on' : ''}">${svg('video')}</span><span class="small">${hasMedia(t.id, 'video') ? 'Video disponibil' : 'Video în curând'}</span></span></a>`;
+  });
+  o += `<section class="card" style="margin-top:18px"><h2>Cum se leagă cu restul programului</h2><ul class="bullets">${INTEGRARE.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    <h3 style="margin-top:14px">Cele 12 săptămâni</h3><ul class="weeks">${WEEKS.map((w, i) => `<li class="${i === 0 ? 'now' : ''}"><b>S${i + 1}</b><span>${esc(w)}</span></li>`).join('')}</ul></section>`;
+  return o;
+}
+
+function viewTh(id) {
+  const t = thById(id); if (!t) return viewTeorie();
+  const i = THEORY.indexOf(t), prev = THEORY[i - 1], next = THEORY[i + 1];
+  let o = `<p><a href="#/teorie">Toată teoria</a></p><h1>${esc(t.titlu)}</h1><p class="lead">${esc(t.scurt)}</p>`;
+  o += mediaSlot(id, 'video');
+  o += `<section class="card">${t.text.map(p => `<p>${esc(p)}</p>`).join('')}<p class="small muted" style="margin:0">Sursa: ${esc(t.sursa)}</p></section>`;
+  o += `<section class="card"><h2>Pentru reflecție</h2><p>${esc(t.intrebare)}</p><textarea rows="3" aria-label="Reflecția ta" data-bind="reflect|${id}">${esc(S.reflect[id] || '')}</textarea><p class="saved">Se salvează automat, doar pe acest dispozitiv.</p></section>`;
+  o += `<section class="card"><h2>Exerciții în care o aplici</h2><div class="rows">${t.ex.map(x => { const e = exById(x); return `<div class="row"><div class="grow"><b>${esc(e.title)}</b><small>${MOMENTS[e.moment].label}${e.min ? ', ' + e.min + ' min' : ''}</small></div><a class="go" href="#/ex/${x}" aria-label="Deschide ${esc(e.title)}">${svg('chev')}</a></div>`; }).join('')}</div></section>`;
+  o += `<div class="pager">${prev ? `<a class="btn ghost small" href="#/teorie/${prev.id}">${esc(prev.titlu)}</a>` : '<span></span>'}${next ? `<a class="btn ghost small" href="#/teorie/${next.id}">${esc(next.titlu)}</a>` : '<span></span>'}</div>`;
+  return o;
+}
+
+/* ---------- JURNAL ---------- */
+let jTab = 'seara';
+function dayPicker() {
+  return `<label class="f" for="dp">Ziua</label><select id="dp" data-day-pick>${weekDays().map((d, i) => `<option value="${d}" ${d === selDay ? 'selected' : ''}>Ziua ${i + 1}, ${fmtLong(d)}</option>`).join('')}</select>`;
+}
+function viewJurnal() {
+  const tabs = [['seara', 'Seara'], ['urme', 'Urme'], ['istoric', 'Istoric']];
+  let o = `<h1>Jurnal</h1><div class="seg-tabs" role="tablist">${tabs.map(([k, l]) => `<button role="tab" data-jtab="${k}" aria-selected="${jTab === k}">${l}</button>`).join('')}</div>`;
+  if (jTab === 'seara') o += `<section class="card"><h2>Cele 5 întrebări</h2>${dayPicker()}${journalForm(selDay)}</section>`;
+  if (jTab === 'urme') o += `<section class="card"><h2>Urme ale mersului conștient</h2>${dayPicker()}${urmeForm(selDay)}</section>`;
+  if (jTab === 'istoric') {
+    const rows = weekDays().map((d, i) => ({ d, i, j: S.journal[d], u: S.traces[d] })).filter(r => (r.j && Object.values(r.j).some(Boolean)) || (r.u && (r.u.words || r.u.why)));
+    o += `<section class="card hist"><h2>Ce ai scris</h2>`;
+    if (!rows.length) o += '<p class="muted">Încă nu ai note. Prima intrare apare după prima seară.</p>';
+    rows.forEach(r => {
+      const j = r.j || {}, u = r.u || {};
+      o += `<details><summary>Ziua ${r.i + 1}, ${fmtShort(r.d)}</summary>`;
+      if (u.words) o += `<p><b>Detaliul:</b> ${esc(u.words)}${u.why ? ` (${esc(u.why)})` : ''}</p>`;
+      QUESTIONS.forEach((q, k) => { if (j['q' + (k + 1)]) o += `<p><b>${esc(q)}</b><br>${esc(j['q' + (k + 1)])}</p>`; });
+      const g = [j.g1, j.g2, j.g3].filter(Boolean);
+      if (g.length) o += `<p><b>Recunoștință:</b> ${esc(g.join('; '))}</p>`;
+      o += '</details>';
+    });
+    o += '</section>';
+  }
+  return o;
+}
+
+/* ---------- FEEDBACK ---------- */
+const RATINGS = [['clar', 'Cât de clare sunt exercițiile?'], ['teorie', 'Cât de utilă ți se pare teoria?'], ['app', 'Cât de ușor e de folosit aplicația?']];
+function usageStats() {
+  const days = weekDays(), started = days.filter(d => dayDone(d) > 0).length;
+  const avg = Math.round(100 * days.reduce((a, d) => a + dayPct(d), 0) / 7);
+  const journalDays = days.filter(d => S.journal[d] && Object.values(S.journal[d]).some(Boolean)).length;
+  return { started, avg, journalDays, opened: Object.keys(S.stats.opens).length };
+}
+function feedbackText() {
+  const g = S.fb.gen, u = usageStats();
+  let t = `Feedback Papillon, săptămâna 1 (${CONFIG.version})\nData: ${todayISO()}\n`;
+  if (S.profile.name) t += `Nume: ${S.profile.name}\n`;
+  t += `\nFolosire: ${u.started} zile cu exerciții bifate din 7, ${u.avg}% din exerciții bifate în medie, ${u.journalDays} zile cu jurnal, ${u.opened} exerciții deschise din ${EX.length}.\n\nEvaluări (1–5):\n`;
+  RATINGS.forEach(([k, l]) => { t += `- ${l} ${g[k] || 'fără răspuns'}\n`; });
+  if (g.minute) t += `\nTimp zilnic real: ${g.minute} min\n`;
+  [['util', 'Ce m-a ajutat cel mai mult'], ['lipsa', 'Ce lipsește'], ['neclar', 'Ce a fost neclar sau greu de folosit']].forEach(([k, l]) => { if (g[k]) t += `\n${l}:\n${g[k]}\n`; });
+  const ex = Object.entries(S.fb.ex).filter(([, v]) => v.r || v.c);
+  if (ex.length) { t += '\nPe exerciții:\n'; ex.forEach(([id, v]) => { t += `- ${exById(id).title}: ${v.r === 1 ? 'clar' : v.r === -1 ? 'nu prea clar' : ''}${v.c ? ' (' + v.c + ')' : ''}\n`; }); }
+  return t;
+}
+function viewFeedback() {
+  const g = S.fb.gen, u = usageStats();
+  let o = `<h1>Feedback</h1><p class="muted">Aplicația e în test. Ce îți spui aici ne ajută să o îmbunătățim înainte de următoarele săptămâni.</p>`;
+  o += `<div class="summary"><div class="stat"><b>${u.started}</b><span>zile cu exerciții</span></div><div class="stat"><b>${u.avg}%</b><span>exerciții bifate</span></div><div class="stat"><b>${u.journalDays}</b><span>zile cu jurnal</span></div></div>`;
+  o += '<section class="card">';
+  RATINGS.forEach(([k, l]) => { o += `<label class="f">${l}</label><div class="rate" role="group" aria-label="${l}">${[1, 2, 3, 4, 5].map(n => `<button data-rate="${k}" data-val="${n}" aria-pressed="${g[k] === n}">${n}</button>`).join('')}</div>`; });
+  o += `<p class="small muted" style="margin:6px 0 0">1 = deloc, 5 = foarte mult</p>
+    <label class="f" for="fm">Cât timp ți-au luat în medie exercițiile zilnice (minute)?</label><input id="fm" type="number" min="0" inputmode="numeric" data-bind="fb|gen|minute" value="${esc(g.minute || '')}">
+    <label class="f" for="fu">Ce te-a ajutat cel mai mult?</label><textarea id="fu" rows="3" data-bind="fb|gen|util">${esc(g.util || '')}</textarea>
+    <label class="f" for="fl">Ce lipsește?</label><textarea id="fl" rows="3" data-bind="fb|gen|lipsa">${esc(g.lipsa || '')}</textarea>
+    <label class="f" for="fn">Ce a fost neclar sau greu de folosit?</label><textarea id="fn" rows="3" data-bind="fb|gen|neclar">${esc(g.neclar || '')}</textarea>
+    <div class="btns" style="margin-top:14px"><button class="btn" data-send>${CONFIG.feedbackEmail ? 'Trimite feedback pe email' : 'Copiază feedback-ul'}</button><button class="btn ghost" data-dl>Descarcă fișier</button></div>
+    <p class="small muted" style="margin-top:8px">Răspunsurile rămân pe dispozitivul tău până apeși pe trimitere.</p></section>`;
+  o += `<section class="card"><h2>Setări</h2><label class="f" for="sn">Numele tău (opțional)</label><input id="sn" type="text" data-bind="profile|name" value="${esc(S.profile.name)}">
+    <label class="f" for="ss">Ziua 1 a săptămânii</label><input id="ss" type="date" data-start value="${S.profile.start}">
+    <div class="btns" style="margin-top:14px"><button class="btn ghost small" data-toggle-theme>Schimbă tema (luminos / întunecat)</button><button class="btn danger small" data-reset>Șterge toate datele</button></div></section>`;
+  if (ADMIN) {
+    const ov = Object.keys(S.media).length ? JSON.stringify(S.media, null, 2) : '(nicio modificare locală)';
+    o += `<section class="card"><h2>Mod administrator</h2><p class="small muted">Linkurile lipite pe ecranele exercițiilor se salvează doar pe acest dispozitiv. Copiază-le în MEDIA din fișier ca să ajungă la toți clienții.</p><textarea rows="6" readonly aria-label="Linkuri media locale">${esc(ov)}</textarea><div class="btns" style="margin-top:8px"><button class="btn ghost small" data-copy-media>Copiază</button></div></section>`;
+  }
+  return o;
+}
+
+/* ---------- NOTIȚE DE REVIZUIRE (pentru Adela; se opresc cu CONFIG.reviewMode = false) ---------- */
+function reviewKey(sec, id) {
+  if (sec === 'ex') return id && exById(id) ? 'ex:' + id : 'ex';
+  if (sec === 'teorie') return id && thById(id) ? 'th:' + id : 'teorie';
+  if (sec === 'jurnal' || sec === 'feedback') return sec;
+  return 'azi';
+}
+function reviewLabel(k) {
+  if (k.startsWith('ex:')) { const e = exById(k.slice(3)); return 'Exercițiu: ' + (e ? e.title : k); }
+  if (k.startsWith('th:')) { const t = thById(k.slice(3)); return 'Concept: ' + (t ? t.titlu : k); }
+  return { azi: 'Ecranul Azi', ex: 'Lista de exerciții', teorie: 'Teorie (prezentare generală)', jurnal: 'Jurnal', feedback: 'Tabul Feedback' }[k] || k;
+}
+function reviewBox(k) {
+  if (!CONFIG.reviewMode) return '';
+  const lab = esc(reviewLabel(k));
+  return `<section class="review" aria-label="Notițe de revizuire"><h2>Pentru Adela: notițe de revizuire</h2>
+    <p class="small">Scrie aici ce ai vrea schimbat la <b>${lab}</b>: conținut, formulări sau formă. Câmpurile acestea dispar după aprobare.</p>
+    <textarea rows="4" aria-label="Notițe pentru ${lab}" data-bind="review|${k}">${esc((S.review || {})[k] || '')}</textarea>
+    <div class="btns" style="margin-top:10px"><button class="btn small" data-review-send>Trimite toate notițele</button><button class="btn ghost small" data-review-dl>Descarcă</button></div>
+    <p class="small" style="margin:8px 0 0">Notițele se salvează pe acest dispozitiv, pagină cu pagină. „Trimite” le adună pe toate într-un singur mesaj.</p></section>`;
+}
+function reviewText() {
+  const r = S.review || {}, keys = Object.keys(r).filter(k => r[k] && r[k].trim());
+  let t = `Notițe de revizuire Papillon S1 (${CONFIG.version})\nData: ${todayISO()}\n`;
+  if (S.profile.name) t += `De la: ${S.profile.name}\n`;
+  if (!keys.length) return t + '\n(nicio notiță)\n';
+  keys.forEach(k => { t += `\n== ${reviewLabel(k)} ==\n${r[k].trim()}\n`; });
+  return t;
+}
+async function sendReview() {
+  save(); const text = reviewText();
+  if (CONFIG.reviewEmail) {
+    location.href = `mailto:${CONFIG.reviewEmail}?subject=${encodeURIComponent('Notițe de revizuire Papillon S1')}&body=${encodeURIComponent(text)}`;
+    copyText(text).then(() => toast('Dacă nu s-a deschis emailul, textul e copiat — lipește-l într-un mesaj'));
+    return;
+  }
+  try { if (navigator.share) { await navigator.share({ title: 'Notițe de revizuire Papillon S1', text }); return; } }
+  catch (e) { if (e && e.name === 'AbortError') return; }
+  copyText(text).then(() => toast('Notițele au fost copiate — lipește-le într-un mesaj'));
+}
+function downloadReview() {
+  save(); const blob = new Blob([reviewText()], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `notite-revizuire-papillon-s1-${todayISO()}.txt`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ---------- rutare ---------- */
+const NAV = [['azi', 'Azi', 'azi'], ['ex', 'Exerciții', 'ex'], ['teorie', 'Teorie', 'teorie'], ['jurnal', 'Jurnal', 'jurnal'], ['feedback', 'Feedback', 'feedback']];
+function route() {
+  const [, sec = 'azi', id] = (location.hash || '#/azi').split('/');
+  stopTimer();
+  let html;
+  if (sec === 'ex') html = id ? viewEx(id) : viewExList();
+  else if (sec === 'teorie') html = id ? viewTh(id) : viewTeorie();
+  else if (sec === 'jurnal') html = viewJurnal();
+  else if (sec === 'feedback') html = viewFeedback();
+  else html = viewAzi();
+  view().innerHTML = html + reviewBox(reviewKey(sec, id));
+  $('#nav').innerHTML = NAV.map(([k, l, ic]) => `<a href="#/${k}" ${(sec === k || (k === 'azi' && !NAV.some(n => n[0] === sec))) ? 'aria-current="page"' : ''}>${svg(ic)}<span>${l}</span></a>`).join('');
+  document.title = 'Papillon · Săptămâna 1';
+}
+function rerender() { const y = window.scrollY; route(); window.scrollTo(0, y); }
+
+/* ---------- evenimente ---------- */
+function applyTheme(t) {
+  const root = document.documentElement;
+  if (t) root.setAttribute('data-theme', t); else root.removeAttribute('data-theme');
+}
+function toggleCheck(id) {
+  const c = (S.checks[selDay] = S.checks[selDay] || {}); c[id] = !c[id]; save(); rerender();
+}
+
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('[data-day],[data-check-btn],[data-once-btn],[data-jtab],[data-timer],[data-rate],[data-exfb],[data-roata-add],[data-roata-del],[data-roata-save],[data-send],[data-dl],[data-toggle-theme],[data-reset],[data-media-save],[data-copy-media],[data-review-send],[data-review-dl]');
+  if (!t) return;
+  if (t.dataset.day) { selDay = t.dataset.day; rerender(); }
+  else if (t.dataset.checkBtn) toggleCheck(t.dataset.checkBtn);
+  else if (t.dataset.onceBtn) { S.once[t.dataset.onceBtn] = !S.once[t.dataset.onceBtn]; save(); rerender(); }
+  else if (t.dataset.jtab) { jTab = t.dataset.jtab; rerender(); }
+  else if (t.hasAttribute('data-timer')) toggleTimer(t);
+  else if (t.dataset.rate) { S.fb.gen[t.dataset.rate] = +t.dataset.val; save(); rerender(); }
+  else if (t.dataset.exfb) { const o = (S.fb.ex[t.dataset.exfb] = S.fb.ex[t.dataset.exfb] || {}); o.r = o.r === +t.dataset.val ? 0 : +t.dataset.val; save(); rerender(); }
+  else if (t.hasAttribute('data-roata-add')) { S.roata.domains.push({ n: 'Domeniu nou', v: 5, note: '' }); save(); rerender(); }
+  else if (t.hasAttribute('data-roata-del')) { S.roata.domains.pop(); save(); rerender(); }
+  else if (t.hasAttribute('data-roata-save')) {
+    S.roata.savedAt = todayISO(); S.roata.history.push({ d: S.roata.savedAt, v: S.roata.domains.map(d => ({ n: d.n, v: d.v })) });
+    S.once.roata = true; save(); rerender(); toast('Roata a fost salvată');
+  }
+  else if (t.hasAttribute('data-review-send')) sendReview();
+  else if (t.hasAttribute('data-review-dl')) downloadReview();
+  else if (t.hasAttribute('data-send')) sendFeedback();
+  else if (t.hasAttribute('data-dl')) downloadFeedback();
+  else if (t.hasAttribute('data-toggle-theme')) {
+    const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+    const nx = cur === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('papapp_theme', nx); } catch (e) { /* ignor */ } applyTheme(nx);
+  }
+  else if (t.hasAttribute('data-reset')) {
+    if (confirm('Ștergi toate datele de pe acest dispozitiv? Nu se poate anula.')) { try { localStorage.removeItem(KEY); } catch (e) { /* ignor */ } location.hash = '#/azi'; location.reload(); }
+  }
+  else if (t.dataset.mediaSave) {
+    const inp = $(`[data-media-in="${t.dataset.mediaSave}"]`); const v = inp.value.trim();
+    if (v) S.media[t.dataset.mediaSave] = v; else delete S.media[t.dataset.mediaSave];
+    save(); rerender(); toast('Link salvat local');
+  }
+  else if (t.hasAttribute('data-copy-media')) copyText(JSON.stringify(S.media, null, 2)).then(() => toast('Copiat'));
+});
+document.addEventListener('keydown', ev => {
+  if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches && ev.target.matches('.seg')) { ev.preventDefault(); selDay = ev.target.dataset.day; rerender(); }
+});
+document.addEventListener('change', ev => {
+  const el = ev.target;
+  if (el.matches('[data-check]')) toggleCheck(el.dataset.check);
+  else if (el.matches('[data-once]')) { S.once[el.dataset.once] = el.checked; save(); rerender(); }
+  else if (el.matches('[data-day-pick]')) { selDay = el.value; rerender(); }
+  else if (el.matches('[data-start]')) { if (el.value) { S.profile.start = el.value; initSelDay(); save(); toast('Data de start a fost schimbată'); } }
+  else if (el.matches('select[data-bind]')) { setPath(el.dataset.bind, el.value); save(); }
+});
+document.addEventListener('input', ev => {
+  const el = ev.target;
+  if (el.matches('input[data-bind],textarea[data-bind]')) { setPath(el.dataset.bind, el.value); saveSoon(); }
+  else if (el.matches('[data-roata]')) {
+    const i = +el.dataset.roata, v = +el.value; S.roata.domains[i].v = v;
+    $('#dv' + i).textContent = v; $('#dn' + i).hidden = v >= 7;
+    $('#radarBox').innerHTML = radarSVG(S.roata.domains); saveSoon();
+  } else if (el.matches('[data-roata-name]')) {
+    S.roata.domains[+el.dataset.roataName].n = el.value; $('#radarBox').innerHTML = radarSVG(S.roata.domains); saveSoon();
+  }
+});
+
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) {
+    const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e2) { /* ignor */ } ta.remove(); return true;
+  }
+}
+function sendFeedback() {
+  save(); const text = feedbackText();
+  if (CONFIG.feedbackEmail) {
+    location.href = `mailto:${CONFIG.feedbackEmail}?subject=${encodeURIComponent('Feedback Papillon S1')}&body=${encodeURIComponent(text)}`;
+    copyText(text).then(() => toast('Textul a fost copiat și ca rezervă'));
+  } else copyText(text).then(() => toast('Feedback copiat — lipește-l într-un mesaj'));
+}
+function downloadFeedback() {
+  save(); const blob = new Blob([feedbackText()], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `feedback-papillon-s1-${todayISO()}.txt`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ---------- pornire ---------- */
+function welcome() {
+  const d = $('#welcome');
+  d.innerHTML = `<div class="dlg"><h2>Bun venit în Papillon</h2>
+    <p>Aici găsești într-un singur loc exercițiile săptămânii 1, teoria din spatele lor, jurnalul de seară și, pe măsură ce sosesc, înregistrările audio și videoclipurile Adelei.</p>
+    <p class="small muted">Aceasta este o versiune de test. Notele tale rămân doar pe acest dispozitiv, iar la final îți cerem părerea în tabul Feedback.</p>
+    <label class="f" for="wn">Cum te cheamă? (opțional)</label><input id="wn" type="text" autocomplete="given-name">
+    <label class="f" for="ws">Ziua 1 a săptămânii</label><input id="ws" type="date" value="${S.profile.start}">
+    <div class="btns" style="margin-top:16px"><button type="button" class="btn" id="wgo">Începem</button></div></div>`;
+  d.hidden = false;
+  $('#wgo').addEventListener('click', () => {
+    S.profile.name = $('#wn').value.trim(); S.profile.start = $('#ws').value || todayISO(); S.profile.done = true;
+    d.hidden = true; d.innerHTML = ''; initSelDay(); save(); route(); window.scrollTo(0, 0);
+  });
+}
+
+(function boot() {
+  let th = null; try { th = localStorage.getItem('papapp_theme'); } catch (e) { /* ignor */ }
+  if (th === 'dark' || th === 'light') applyTheme(th);
+  S.stats.sessions = (S.stats.sessions || 0) + 1; save();
+  initSelDay();
+  if (CONFIG.reviewMode) $('.testbadge').textContent = 'versiune pentru revizuire';
+  $('#themeBtn').addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+    const nx = cur === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('papapp_theme', nx); } catch (e) { /* ignor */ } applyTheme(nx);
+  });
+  window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
+  route();
+  if (!S.profile.done) welcome();
+})();
+
+
+</script>
+</body>
+</html>
