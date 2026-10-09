@@ -758,9 +758,9 @@ const exById = id => EX.find(e => e.id === id);
 const thById = id => THEORY.find(t => t.id === id);
 const view = () => $('#view');
 
-function toast(msg) {
+function toast(msg, ms = 1800) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('on');
-  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 1800);
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), ms);
 }
 
 /* ---------- AZI ---------- */
@@ -1077,11 +1077,15 @@ async function postRemote(type, text, okMsg) {
     const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 20000);
     const r = await fetch(CONFIG.feedbackUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ type, version: CONFIG.version, name: S.profile.name || '', text }), signal: ctl.signal });
     clearTimeout(to);
-    const j = await r.json();
-    if (!j || !j.ok) throw new Error('rejected');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const raw = await r.text(); let j = null;
+    try { j = JSON.parse(raw); } catch (pe) { throw new Error('răspuns nu e JSON (probabil cere autentificare Google): ' + raw.slice(0, 60).replace(/\s+/g, ' ')); }
+    if (!j || !j.ok) throw new Error('scriptul a respins mesajul: ' + (j && j.error));
     toast(okMsg);
   } catch (e) {
-    copyText(text).then(() => toast('Nu s-a putut trimite acum. Textul e copiat — îl poți lipi într-un mesaj.'));
+    console.warn('Trimitere eșuată', e);
+    const why = e && e.name === 'AbortError' ? 'timp expirat' : (e && e.message) || 'necunoscut';
+    copyText(text).then(() => { toast('Nu s-a putut trimite (' + why + '). Textul e copiat — îl poți lipi într-un mesaj.', 9000); });
   } finally { sending = false; btns.forEach(b => { b.disabled = false; }); }
 }
 function sendFeedback() {
