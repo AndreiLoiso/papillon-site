@@ -1070,20 +1070,30 @@ async function copyText(t) {
 }
 /* trimite textul către scriptul Apps Script (Sheet + email către Andrei și Adela) */
 let sending = false;
-async function postRemote(type, text, okMsg) {
-  if (sending) return; sending = true;
+function postRemote(type, text, okMsg) {
+  if (sending) return Promise.resolve(); sending = true;
   const btns = $$('[data-send],[data-review-send]'); btns.forEach(b => { b.disabled = true; });
-  try {
-    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 20000);
-    // „no-cors": cererea pleacă oricum către Apps Script; răspunsul nu poate fi citit din alt domeniu.
-    await fetch(CONFIG.feedbackUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ type, version: CONFIG.version, name: S.profile.name || '', text }), signal: ctl.signal });
-    clearTimeout(to);
-    toast(okMsg);
-  } catch (e) {
-    console.warn('Trimitere eșuată', e);
-    const why = e && e.name === 'AbortError' ? 'timp expirat' : (e && e.message) || 'necunoscut';
-    copyText(text).then(() => { toast('Nu s-a putut trimite (' + why + '). Textul e copiat — îl poți lipi într-un mesaj.', 9000); });
-  } finally { sending = false; btns.forEach(b => { b.disabled = false; }); }
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  return new Promise(resolve => {
+    let done = false, iframe, form, timer;
+    const finish = (ok, why) => {
+      if (done) return; done = true; clearTimeout(timer); window.removeEventListener('message', onMsg);
+      if (iframe) iframe.remove(); if (form) form.remove();
+      sending = false; btns.forEach(b => { b.disabled = false; });
+      if (ok) toast(okMsg, 3500);
+      else copyText(text).then(() => toast('Nu s-a putut trimite (' + why + '). Textul e copiat — îl poți lipi într-un mesaj.', 9000));
+      resolve(ok);
+    };
+    const onMsg = ev => { const d = ev.data; if (d && d.papillon === id) finish(!!d.ok, d.error || 'respins de script'); };
+    window.addEventListener('message', onMsg);
+    iframe = document.createElement('iframe'); iframe.name = 'pap_fb_' + id; iframe.hidden = true; iframe.title = 'trimitere';
+    form = document.createElement('form'); form.method = 'POST'; form.action = CONFIG.feedbackUrl; form.target = iframe.name; form.hidden = true;
+    const inp = document.createElement('input'); inp.type = 'hidden'; inp.name = 'payload';
+    inp.value = JSON.stringify({ id, type, version: CONFIG.version, name: S.profile.name || '', text });
+    form.appendChild(inp); document.body.appendChild(iframe); document.body.appendChild(form);
+    timer = setTimeout(() => finish(false, 'fără răspuns de la script'), 25000);
+    form.submit();
+  });
 }
 function sendFeedback() {
   save(); const text = feedbackText();
