@@ -1075,12 +1075,9 @@ async function postRemote(type, text, okMsg) {
   const btns = $$('[data-send],[data-review-send]'); btns.forEach(b => { b.disabled = true; });
   try {
     const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 20000);
-    const r = await fetch(CONFIG.feedbackUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ type, version: CONFIG.version, name: S.profile.name || '', text }), signal: ctl.signal });
+    // „no-cors": cererea pleacă oricum către Apps Script; răspunsul nu poate fi citit din alt domeniu.
+    await fetch(CONFIG.feedbackUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ type, version: CONFIG.version, name: S.profile.name || '', text }), signal: ctl.signal });
     clearTimeout(to);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const raw = await r.text(); let j = null;
-    try { j = JSON.parse(raw); } catch (pe) { throw new Error('răspuns nu e JSON (probabil cere autentificare Google): ' + raw.slice(0, 60).replace(/\s+/g, ' ')); }
-    if (!j || !j.ok) throw new Error('scriptul a respins mesajul: ' + (j && j.error));
     toast(okMsg);
   } catch (e) {
     console.warn('Trimitere eșuată', e);
