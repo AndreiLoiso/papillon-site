@@ -226,6 +226,14 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
 .review .btn{border-color:#9C6A12;background:#9C6A12;color:#fff}
 .review .btn.ghost{background:none;color:inherit;border-color:#9C6A12}
 
+.tprog{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;margin-top:14px}
+.tprog .grow{flex:1;min-width:0}.tprog b{display:block}.tprog small{color:var(--muted)}
+.tprog>svg{width:20px;height:20px;color:var(--muted);flex:none}
+.tchecks{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.chk{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:500}
+.okbadge{display:inline-block;font:600 .72rem var(--sans,inherit);padding:2px 8px;border-radius:99px;background:var(--accent);color:var(--accent-ink);vertical-align:middle;margin-left:6px}
+.okbadge.half{background:var(--tip);color:var(--tip-ink)}
+
 </style>
 </head>
 <body>
@@ -245,21 +253,19 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
 <div id="fatal" hidden style="position:fixed;left:8px;right:8px;top:8px;z-index:99;background:#fff3f0;color:#7a1f14;border:1px solid #d9806f;border-radius:10px;padding:10px;font:13px/1.4 system-ui"></div>
 <script>
 window.addEventListener("error",function(e){var f=document.getElementById("fatal");if(f){f.hidden=false;f.textContent="Eroare: "+(e.message||e.error)+" ("+(e.lineno||"")+")";}});
-'use strict';
 /* ============================================================
    Papillon · Săptămâna 1 — conținut și configurare
-   Aici se editează: linkurile media (MEDIA), emailul de feedback,
+   Aici se editează: linkurile media (MEDIA), adresa scriptului de feedback,
    textele exercițiilor și ale teoriei.
    ============================================================ */
 
 const CONFIG = {
   version: 'S1-test-0.1',
-  // Adresa la care clienții trimit feedback-ul (lasă gol → feedback-ul se copiază / se descarcă)
-  feedbackEmail: '',
+  // Adresa web a scriptului Google Apps Script care primește feedback-ul (vezi apps-script/Code.gs).
+  // Lasă gol → feedback-ul se copiază / se descarcă. Adresele de email stau doar în script, nu aici.
+  feedbackUrl: '',
   // Mod revizuire: afișează câmpul „Pentru Adela” la finalul fiecărei pagini. După aprobare: false.
   reviewMode: true,
-  // Opțional: adresa la care se trimit notițele de revizuire (dacă lipsește, se folosește Partajare / copiere)
-  reviewEmail: '',
 };
 
 /* ---- MEDIA -------------------------------------------------
@@ -500,10 +506,10 @@ const DEFAULT_DOMAINS = [
   'Relații sociale', 'Familie', 'Carieră', 'Viață romantică', 'Timp liber',
   'Contribuție la lume', 'Sănătate', 'Mediu personal', 'Dezvoltare personală',
 ];
-
 /* ============================================================
    Papillon · S1 — nucleu: utilitare, stare, media, instrumente
    ============================================================ */
+'use strict';
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -541,6 +547,7 @@ const defaults = () => ({
   roata: { domains: DEFAULT_DOMAINS.map(n => ({ n, v: 5, note: '' })), savedAt: '', history: [] },
   goals: [{ domain: '', goal: '', why: '' }, { domain: '', goal: '', why: '' }, { domain: '', goal: '', why: '' }],
   once: {},
+  theory: {},
   fb: { ex: {}, gen: {} },
   review: {},
   stats: { opens: {}, sessions: 0, first: todayISO() },
@@ -742,10 +749,10 @@ function obiectiveTool() {
   });
   return o + '<p class="saved" style="margin-top:8px">Se salvează automat, doar pe acest dispozitiv.</p>';
 }
-
 /* ============================================================
    Papillon · S1 — ecrane, rutare, evenimente
    ============================================================ */
+'use strict';
 
 const exById = id => EX.find(e => e.id === id);
 const thById = id => THEORY.find(t => t.id === id);
@@ -764,6 +771,10 @@ function rowEx(e, checked, opts = {}) {
   return `<div class="row ${checked ? 'done' : ''}">${box}<div class="grow"><b>${esc(e.title)}</b><small>${mm}</small></div>${media}<a class="go" href="#/ex/${e.id}" aria-label="Deschide ${esc(e.title)}">${svg('chev')}</a></div>`;
 }
 
+const thState = id => S.theory[id] || {};
+const thDone = id => { const t = thById(id), st = thState(id); return !!st.read && (!hasMedia(id, 'video') || !!st.video); };
+const thCount = () => THEORY.filter(t => thDone(t.id)).length;
+
 function viewAzi() {
   const days = weekDays(), idx = days.indexOf(selDay) + 1;
   const done = dayDone(selDay), tot = DAILY().length;
@@ -777,6 +788,7 @@ function viewAzi() {
     if (m === 'seara') o += `<div style="margin-top:10px"><a class="btn ghost small" href="#/jurnal">Scrie în jurnal</a></div>`;
     o += '</section>';
   });
+  o += `<a class="card tprog" href="#/teorie"><div class="grow"><b>Teorie: ${thCount()} din ${THEORY.length}</b><small>${thCount() === THEORY.length ? 'Ai parcurs toată teoria săptămânii.' : 'concepte parcurse. Deschide pentru a continua.'}</small></div>${svg('chev')}</a>`;
   o += `<section class="card"><div class="moment-h"><h2>O singură dată</h2><small>în această săptămână</small></div><div class="rows">${EX.filter(e => e.moment === 'punctual').map(e => rowEx(e, !!S.once[e.id], { once: true, noCheck: !!e.optional })).join('')}</div></section>`;
   return o;
 }
@@ -831,7 +843,7 @@ function viewTeorie() {
     <div class="band"><div><b>Dimineața</b><span>corpul</span></div><div><b>Ziua</b><span>sufletul</span></div><div><b>Seara</b><span>mintea</span></div></div></section>`;
   o += '<h2 style="margin-top:20px">Cele patru concepte ale săptămânii</h2>';
   THEORY.forEach(t => {
-    o += `<a class="card tcard" href="#/teorie/${t.id}" style="margin-top:10px"><h3>${esc(t.titlu)}</h3><p class="muted" style="margin:0">${esc(t.scurt)}</p>
+    o += `<a class="card tcard" href="#/teorie/${t.id}" style="margin-top:10px"><h3>${esc(t.titlu)}${thDone(t.id) ? ' <span class="okbadge">parcurs</span>' : (thState(t.id).read ? ' <span class="okbadge half">citit</span>' : '')}</h3><p class="muted" style="margin:0">${esc(t.scurt)}</p>
       <span class="mini" style="margin-top:6px"><span class="${hasMedia(t.id, 'video') ? 'on' : ''}">${svg('video')}</span><span class="small">${hasMedia(t.id, 'video') ? 'Video disponibil' : 'Video în curând'}</span></span></a>`;
   });
   o += `<section class="card" style="margin-top:18px"><h2>Cum se leagă cu restul programului</h2><ul class="bullets">${INTEGRARE.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
@@ -845,6 +857,8 @@ function viewTh(id) {
   let o = `<p><a href="#/teorie">Toată teoria</a></p><h1>${esc(t.titlu)}</h1><p class="lead">${esc(t.scurt)}</p>`;
   o += mediaSlot(id, 'video');
   o += `<section class="card">${t.text.map(p => `<p>${esc(p)}</p>`).join('')}<p class="small muted" style="margin:0">Sursa: ${esc(t.sursa)}</p></section>`;
+  const st = thState(id);
+  o += `<section class="card flat tchecks"><label class="chk"><input type="checkbox" class="check" data-th="${id}|read" ${st.read ? 'checked' : ''}><span>Am citit</span></label>${hasMedia(id, 'video') ? `<label class="chk"><input type="checkbox" class="check" data-th="${id}|video" ${st.video ? 'checked' : ''}><span>Am văzut videoul</span></label>` : '<p class="small muted" style="margin:0">Bifa pentru video apare când videoul e disponibil.</p>'}</section>`;
   o += `<section class="card"><h2>Pentru reflecție</h2><p>${esc(t.intrebare)}</p><textarea rows="3" aria-label="Reflecția ta" data-bind="reflect|${id}">${esc(S.reflect[id] || '')}</textarea><p class="saved">Se salvează automat, doar pe acest dispozitiv.</p></section>`;
   o += `<section class="card"><h2>Exerciții în care o aplici</h2><div class="rows">${t.ex.map(x => { const e = exById(x); return `<div class="row"><div class="grow"><b>${esc(e.title)}</b><small>${MOMENTS[e.moment].label}${e.min ? ', ' + e.min + ' min' : ''}</small></div><a class="go" href="#/ex/${x}" aria-label="Deschide ${esc(e.title)}">${svg('chev')}</a></div>`; }).join('')}</div></section>`;
   o += `<div class="pager">${prev ? `<a class="btn ghost small" href="#/teorie/${prev.id}">${esc(prev.titlu)}</a>` : '<span></span>'}${next ? `<a class="btn ghost small" href="#/teorie/${next.id}">${esc(next.titlu)}</a>` : '<span></span>'}</div>`;
@@ -910,7 +924,7 @@ function viewFeedback() {
     <label class="f" for="fu">Ce te-a ajutat cel mai mult?</label><textarea id="fu" rows="3" data-bind="fb|gen|util">${esc(g.util || '')}</textarea>
     <label class="f" for="fl">Ce lipsește?</label><textarea id="fl" rows="3" data-bind="fb|gen|lipsa">${esc(g.lipsa || '')}</textarea>
     <label class="f" for="fn">Ce a fost neclar sau greu de folosit?</label><textarea id="fn" rows="3" data-bind="fb|gen|neclar">${esc(g.neclar || '')}</textarea>
-    <div class="btns" style="margin-top:14px"><button class="btn" data-send>${CONFIG.feedbackEmail ? 'Trimite feedback pe email' : 'Copiază feedback-ul'}</button><button class="btn ghost" data-dl>Descarcă fișier</button></div>
+    <div class="btns" style="margin-top:14px"><button class="btn" data-send>${CONFIG.feedbackUrl ? 'Trimite feedback' : 'Copiază feedback-ul'}</button><button class="btn ghost" data-dl>Descarcă fișier</button></div>
     <p class="small muted" style="margin-top:8px">Răspunsurile rămân pe dispozitivul tău până apeși pe trimitere.</p></section>`;
   o += `<section class="card"><h2>Setări</h2><label class="f" for="sn">Numele tău (opțional)</label><input id="sn" type="text" data-bind="profile|name" value="${esc(S.profile.name)}">
     <label class="f" for="ss">Ziua 1 a săptămânii</label><input id="ss" type="date" data-start value="${S.profile.start}">
@@ -953,11 +967,7 @@ function reviewText() {
 }
 async function sendReview() {
   save(); const text = reviewText();
-  if (CONFIG.reviewEmail) {
-    location.href = `mailto:${CONFIG.reviewEmail}?subject=${encodeURIComponent('Notițe de revizuire Papillon S1')}&body=${encodeURIComponent(text)}`;
-    copyText(text).then(() => toast('Dacă nu s-a deschis emailul, textul e copiat — lipește-l într-un mesaj'));
-    return;
-  }
+  if (CONFIG.feedbackUrl) { postRemote('review', text, 'Notițele au fost trimise. Mulțumim!'); return; }
   try { if (navigator.share) { await navigator.share({ title: 'Notițe de revizuire Papillon S1', text }); return; } }
   catch (e) { if (e && e.name === 'AbortError') return; }
   copyText(text).then(() => toast('Notițele au fost copiate — lipește-le într-un mesaj'));
@@ -1034,6 +1044,7 @@ document.addEventListener('keydown', ev => {
 document.addEventListener('change', ev => {
   const el = ev.target;
   if (el.matches('[data-check]')) toggleCheck(el.dataset.check);
+  else if (el.matches('[data-th]')) { const [id, k] = el.dataset.th.split('|'); (S.theory[id] = S.theory[id] || {})[k] = el.checked; save(); rerender(); }
   else if (el.matches('[data-once]')) { S.once[el.dataset.once] = el.checked; save(); rerender(); }
   else if (el.matches('[data-day-pick]')) { selDay = el.value; rerender(); }
   else if (el.matches('[data-start]')) { if (el.value) { S.profile.start = el.value; initSelDay(); save(); toast('Data de start a fost schimbată'); } }
@@ -1057,12 +1068,26 @@ async function copyText(t) {
     try { document.execCommand('copy'); } catch (e2) { /* ignor */ } ta.remove(); return true;
   }
 }
+/* trimite textul către scriptul Apps Script (Sheet + email către Andrei și Adela) */
+let sending = false;
+async function postRemote(type, text, okMsg) {
+  if (sending) return; sending = true;
+  const btns = $$('[data-send],[data-review-send]'); btns.forEach(b => { b.disabled = true; });
+  try {
+    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 20000);
+    const r = await fetch(CONFIG.feedbackUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ type, version: CONFIG.version, name: S.profile.name || '', text }), signal: ctl.signal });
+    clearTimeout(to);
+    const j = await r.json();
+    if (!j || !j.ok) throw new Error('rejected');
+    toast(okMsg);
+  } catch (e) {
+    copyText(text).then(() => toast('Nu s-a putut trimite acum. Textul e copiat — îl poți lipi într-un mesaj.'));
+  } finally { sending = false; btns.forEach(b => { b.disabled = false; }); }
+}
 function sendFeedback() {
   save(); const text = feedbackText();
-  if (CONFIG.feedbackEmail) {
-    location.href = `mailto:${CONFIG.feedbackEmail}?subject=${encodeURIComponent('Feedback Papillon S1')}&body=${encodeURIComponent(text)}`;
-    copyText(text).then(() => toast('Textul a fost copiat și ca rezervă'));
-  } else copyText(text).then(() => toast('Feedback copiat — lipește-l într-un mesaj'));
+  if (CONFIG.feedbackUrl) postRemote('feedback', text, 'Feedback trimis. Mulțumim!');
+  else copyText(text).then(() => toast('Feedback copiat — lipește-l într-un mesaj'));
 }
 function downloadFeedback() {
   save(); const blob = new Blob([feedbackText()], { type: 'text/plain;charset=utf-8' });
@@ -1100,7 +1125,6 @@ function welcome() {
   route();
   if (!S.profile.done) welcome();
 })();
-
 
 </script>
 </body>
